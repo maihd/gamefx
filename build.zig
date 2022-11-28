@@ -1,14 +1,14 @@
 const std = @import("std");
 
 pub const pkg = std.build.Pkg{
-    .name = "raylib",
+    .name = "gamefx",
     .source = .{ .path = thisDir() ++ "/src/main.zig" },
 };
 
 pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
     const mode = b.standardReleaseOptions();
-    const step = stepBindings(b, target, mode);
+    const step = stepGameFX(b, target, mode);
     step.install();
 
     // Add test step
@@ -22,18 +22,18 @@ pub fn build(b: *std.build.Builder) void {
 
     // Example applications
 
-    //installExample(b, example_core_basic_window.build(b, target, mode), example_core_basic_window.name);
-    //installExample(b, example_core_input_keys.build(b, target, mode), example_core_input_keys.name);
+    installExample(b, example_basic_window.build(b, target, mode), example_basic_window.name);
+    //installExample(b, example_input_keys.build(b, target, mode), example_input_keys.name);
 }
 
-pub fn stepBindings(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
-    const step = b.addStaticLibrary("raylib-zig", pkg.source.path);
+pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
+    const step = b.addStaticLibrary("gamefx", pkg.source.path);
     step.setBuildMode(mode);
     step.setTarget(target);
 
     step.linkLibC();
     step.addIncludePath(thisDir() ++ "/libs/raylib/src");
-    step.addIncludePath(thisDir() ++ "/libs/raygui/src");
+    //step.addIncludePath(thisDir() ++ "/libs/raygui/src");
 
     linkSystemDeps(step);
 
@@ -105,9 +105,9 @@ pub fn stepRaylib(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
 pub fn link(exe: *std.build.LibExeObjStep) void {
     exe.linkLibC();
     exe.linkLibrary(stepRaylib(exe.builder, exe.target, exe.build_mode));
-    exe.linkLibrary(stepBindings(exe.builder, exe.target, exe.build_mode));
+    exe.linkLibrary(stepGameFX(exe.builder, exe.target, exe.build_mode));
     exe.addIncludePath(thisDir() ++ "/libs/raylib/src");
-    exe.addIncludePath(thisDir() ++ "/libs/raygui/src");
+    //exe.addIncludePath(thisDir() ++ "/libs/raygui/src");
 
     linkSystemDeps(exe);
 }
@@ -172,3 +172,6 @@ pub fn installExample(b: *std.build.Builder, exe: *std.build.LibExeObjStep, comp
 inline fn thisDir() []const u8 {
     return comptime std.fs.path.dirname(@src().file) orelse ".";
 }
+
+const example_basic_window = @import("examples/basic_window/build.zig");
+//const example_input_keys = @import("examples/input_keys/build.zig");
