@@ -23,8 +23,8 @@ pub fn build(b: *std.build.Builder) void {
     // Example applications
 
     installExample(b, example_basic_window.build(b, target, mode), example_basic_window.name);
+    installExample(b, example_input_keys.build(b, target, mode), example_input_keys.name);
     installExample(b, example_gui_demo.build(b, target, mode), example_gui_demo.name);
-    //installExample(b, example_input_keys.build(b, target, mode), example_input_keys.name);
 }
 
 pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
@@ -175,5 +175,5 @@ inline fn thisDir() []const u8 {
 }
 
 const example_basic_window = @import("examples/basic_window/build.zig");
+const example_input_keys = @import("examples/input_keys/build.zig");
 const example_gui_demo = @import("examples/gui_demo/build.zig");
-//const example_input_keys = @import("examples/input_keys/build.zig");
