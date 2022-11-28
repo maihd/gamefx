@@ -33,7 +33,7 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
 
     step.linkLibC();
     step.addIncludePath(thisDir() ++ "/libs/raylib/src");
-    //step.addIncludePath(thisDir() ++ "/libs/raygui/src");
+    step.addIncludePath(thisDir() ++ "/libs/raygui/src");
 
     linkSystemDeps(step);
 
@@ -107,7 +107,7 @@ pub fn link(exe: *std.build.LibExeObjStep) void {
     exe.linkLibrary(stepRaylib(exe.builder, exe.target, exe.build_mode));
     exe.linkLibrary(stepGameFX(exe.builder, exe.target, exe.build_mode));
     exe.addIncludePath(thisDir() ++ "/libs/raylib/src");
-    //exe.addIncludePath(thisDir() ++ "/libs/raygui/src");
+    exe.addIncludePath(thisDir() ++ "/libs/raygui/src");
 
     linkSystemDeps(exe);
 }
