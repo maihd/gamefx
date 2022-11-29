@@ -2,7 +2,7 @@ const gamefx = @import("gamefx");
 
 pub fn main() !void {
     try gamefx.init(.{
-        .title = "Input Keys",
+        .title = "GameFX Input Keys",
         .width = 800,
         .height = 480
     });

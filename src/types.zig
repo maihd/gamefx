@@ -127,3 +127,27 @@ pub const Key       = enum(c_int) {
     //button_volume_up       = 24,       // Key: Android volume up button
     //button_volume_down     = 25        // Key: Android volume down button
 };
+
+pub const MouseButton = enum(c_int) {
+    left    = 0,    // Mouse button left
+    right   = 1,    // Mouse button right
+    middle  = 2,    // Mouse button middle (pressed wheel)
+    side    = 3,    // Mouse button side (advanced mouse device)
+    extra   = 4,    // Mouse button extra (advanced mouse device)
+    forward = 5,    // Mouse button forward (advanced mouse device)
+    back    = 6,    // Mouse button back (advanced mouse device)
+};
+
+pub const MouseCursor = enum(c_int) {
+    default       = 0,     // Default pointer shape
+    arrow         = 1,     // Arrow shape
+    ibeam         = 2,     // Text writing cursor shape
+    crosshair     = 3,     // Cross shape
+    pointing_hand = 4,     // Pointing hand cursor
+    resize_ew     = 5,     // Horizontal resize/move arrow shape
+    resize_ns     = 6,     // Vertical resize/move arrow shape
+    resize_nwse   = 7,     // Top-left to bottom-right diagonal resize/move arrow shape
+    resize_nesw   = 8,     // The top-right to bottom-left diagonal resize/move arrow shape
+    resize_all    = 9,     // The omni-directional resize/move cursor shape
+    not_allowed   = 10     // The operation-not-allowed shape
+};

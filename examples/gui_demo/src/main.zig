@@ -2,7 +2,7 @@ const gamefx = @import("gamefx");
 
 pub fn main() !void {
     try gamefx.init(.{
-        .title = "GameFX basic window",
+        .title = "GameFX GUI Demo",
         .width = 800,
         .height = 480
     });
