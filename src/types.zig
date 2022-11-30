@@ -151,3 +151,7 @@ pub const MouseCursor = enum(c_int) {
     resize_all    = 9,     // The omni-directional resize/move cursor shape
     not_allowed   = 10     // The operation-not-allowed shape
 };
+
+const raylib = @import("backends/raylib.zig");
+
+pub const Texture = raylib.Texture;

@@ -44,3 +44,11 @@ pub fn isInit() bool {
 pub fn isClosing() bool {
     return raylib.WindowShouldClose();
 }
+
+pub fn getDeltaTime() f32 {
+    return raylib.GetFrameTime();
+}
+
+pub fn getTotalTime() f64 {
+    return raylib.GetTime();
+}

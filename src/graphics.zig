@@ -51,3 +51,41 @@ pub fn drawCircle(position: types.f32x2, radius: f32, color: types.Color32) void
         }
     );
 }
+
+pub fn drawTexture(texture: types.Texture, position: types.f32x2, color: types.Color32) void {
+    raylib.DrawTextureV(
+        texture,                            // texture: raylib.Texture
+        .{                                  // position: raylib.Vector2
+            .x = position[0], 
+            .y = position[1] 
+        },      
+        .{                                  // color: raylib.Color
+            .r = color[0], 
+            .g = color[1], 
+            .b = color[2], 
+            .a = color[3]
+        }
+    );
+}
+
+pub fn drawTextureRect(texture: types.Texture, rect: types.Rect, position: types.f32x2, color: types.Color32) void {
+    raylib.DrawTextureRec(
+        texture,                            // texture: raylib.Texture
+        .{                                  // rectangle: raylib.Rectangle
+            .x      = rect[0],
+            .y      = rect[1],
+            .width  = rect[2],
+            .height = rect[3]
+        },
+        .{                                  // position: raylib.Vector2
+            .x = position[0], 
+            .y = position[1] 
+        },      
+        .{                                  // color: raylib.Color
+            .r = color[0], 
+            .g = color[1], 
+            .b = color[2], 
+            .a = color[3]
+        }
+    );
+}
