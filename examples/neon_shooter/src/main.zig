@@ -1,4 +1,7 @@
 const gamefx = @import("gamefx");
+const build_options = @import("build_options");
+
+const assets_dir = build_options.assets_dir;
 
 pub fn main() !void {
     try gamefx.init(.{

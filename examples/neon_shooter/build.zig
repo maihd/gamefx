@@ -9,6 +9,12 @@ pub fn build(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.built
     exe.setTarget(target);
     exe.setBuildMode(mode);
 
+    // Add assets folder
+    const assets_dir = thisDir() ++ "/assets";
+    const exe_options = b.addOptions();
+    exe.addOptions("build_options", exe_options);
+    exe_options.addOption([]const u8, "assets_dir", assets_dir);
+
     gamefx.link(exe);
     exe.addPackage(gamefx.pkg);
 
