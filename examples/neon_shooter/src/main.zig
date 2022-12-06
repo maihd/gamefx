@@ -11,7 +11,15 @@ pub fn main() !void {
     });
     defer gamefx.deinit();
 
+    const music_background = try gamefx.assets.loadMusic(assets_dir + "/audios/music_gameplay.mp3");
+    defer gamefx.assets.unloadMusic(music_background);
+
+    gamefx.audio.playMusic(music_background);
+    defer gamefx.audio.stopMusic(music_background);
+
     while (!gamefx.isClosing()) {
+        gamefx.audio.updateMusic(music_background);
+
         try gamefx.graphics.newFrame();
         defer gamefx.graphics.endFrame();
 
