@@ -1,5 +1,33 @@
 const types = @import("types.zig");
 
+pub const color_lightgray       = types.Color{ 200 / 255, 200 / 255, 200 / 255, 1.0 };  // Light Gray
+pub const color_gray            = types.Color{ 130 / 255, 130 / 255, 130 / 255, 1.0 };  // Gray
+pub const color_darkgray        = types.Color{  80 / 255,  80 / 255,  80 / 255, 1.0 };  // Dark Gray
+pub const color_yellow          = types.Color{ 253 / 255, 249 / 255,   0 / 255, 1.0 };  // Yellow
+pub const color_gold            = types.Color{ 255 / 255, 203 / 255,   0 / 255, 1.0 };  // Gold
+pub const color_orange          = types.Color{ 255 / 255, 161 / 255,   0 / 255, 1.0 };  // Orange
+pub const color_pink            = types.Color{ 255 / 255, 109 / 255, 194 / 255, 1.0 };  // Pink
+pub const color_red             = types.Color{ 230 / 255,  41 / 255,  55 / 255, 1.0 };  // Red
+pub const color_maroon          = types.Color{ 190 / 255,  33 / 255,  55 / 255, 1.0 };  // Maroon
+pub const color_green           = types.Color{   0 / 255, 228 / 255,  48 / 255, 1.0 };  // Green
+pub const color_lime            = types.Color{   0 / 255, 158 / 255,  47 / 255, 1.0 };  // Lime
+pub const color_darkgreen       = types.Color{   0 / 255, 117 / 255,  44 / 255, 1.0 };  // Dark Green
+pub const color_skyblue         = types.Color{ 102 / 255, 191 / 255, 255 / 255, 1.0 };  // Sky Blue
+pub const color_blue            = types.Color{   0 / 255, 121 / 255, 241 / 255, 1.0 };  // Blue
+pub const color_darkblue        = types.Color{   0 / 255,  82 / 255, 172 / 255, 1.0 };  // Dark Blue
+pub const color_purple          = types.Color{ 200 / 255, 122 / 255, 255 / 255, 1.0 };  // Purple
+pub const color_violet          = types.Color{ 135 / 255,  60 / 255, 190 / 255, 1.0 };  // Violet
+pub const color_darkpurple      = types.Color{ 112 / 255,  31 / 255, 126 / 255, 1.0 };  // Dark Purple
+pub const color_beige           = types.Color{ 211 / 255, 176 / 255, 131 / 255, 1.0 };  // Beige
+pub const color_brown           = types.Color{ 127 / 255, 106 / 255,  79 / 255, 1.0 };  // Brown
+pub const color_darkbrown       = types.Color{  76 / 255,  63 / 255,  47 / 255, 1.0 };  // Dark Brown
+
+pub const color_white           = types.Color{ 255 / 255, 255 / 255, 255 / 255, 1.0 };  // White
+pub const color_black           = types.Color{   0 / 255,   0 / 255,   0 / 255, 1.0 };  // Black
+pub const color_blank           = types.Color{   0 / 255,   0 / 255,   0 / 255, 0.0 };  // Blank (Transparent)
+pub const color_magenta         = types.Color{ 255 / 255,   0 / 255, 255 / 255, 1.0 };  // Magenta
+pub const color_raywhite        = types.Color{ 245 / 255, 245 / 255, 245 / 255, 1.0 };  // Raylib's own White (raylib logo)
+
 pub const color32_lightgray     = types.Color32{ 200, 200, 200, 255 };  // Light Gray
 pub const color32_gray          = types.Color32{ 130, 130, 130, 255 };  // Gray
 pub const color32_darkgray      = types.Color32{  80,  80,  80, 255 };  // Dark Gray
