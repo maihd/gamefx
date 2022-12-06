@@ -22,6 +22,7 @@ pub fn build(b: *std.build.Builder) void {
 
     // Example applications
 
+    installExample(b, example_neon_shooter.build(b, target, mode), example_neon_shooter.name);
     installExample(b, example_basic_window.build(b, target, mode), example_basic_window.name);
     installExample(b, example_input_mouse.build(b, target, mode), example_input_mouse.name);
     installExample(b, example_input_keys.build(b, target, mode), example_input_keys.name);
@@ -176,6 +177,7 @@ inline fn thisDir() []const u8 {
     return comptime std.fs.path.dirname(@src().file) orelse ".";
 }
 
+const example_neon_shooter = @import("examples/neon_shooter/build.zig");
 const example_basic_window = @import("examples/basic_window/build.zig");
 const example_input_mouse = @import("examples/input_mouse/build.zig");
 const example_input_keys = @import("examples/input_keys/build.zig");
