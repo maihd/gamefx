@@ -15,12 +15,12 @@ pub fn unloadSound(sound: types.Sound) void {
 }
 
 pub fn loadMusic(path: []const u8) !types.Music {
-    const music = raylib.LoadSound(@ptrCast([*c]const u8, path));
+    const music = raylib.LoadMusicStream(@ptrCast([*c]const u8, path));
     return if (music.stream.buffer == null) error.FileNotFound else music;
 }
 
 pub fn unloadMusic(music: types.Music) void {
-    raylib.UnloadMusic(music);
+    raylib.UnloadMusicStream(music);
 }
 
 // Manage shader

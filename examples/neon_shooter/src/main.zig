@@ -11,7 +11,7 @@ pub fn main() !void {
     });
     defer gamefx.deinit();
 
-    const music_background = try gamefx.assets.loadMusic(assets_dir + "/audios/music_gameplay.mp3");
+    const music_background = try gamefx.assets.loadMusic(assets_dir ++ "/audios/music_gameplay.mp3");
     defer gamefx.assets.unloadMusic(music_background);
 
     gamefx.audio.playMusic(music_background);

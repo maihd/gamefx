@@ -14,13 +14,25 @@ pub fn stopSound(sound: types.Sound) void {
 }
 
 pub fn playMusic(music: types.Music) void {
-    raylib.PlayMusic(music);
+    raylib.PlayMusicStream(music);
 }
 
 pub fn stopMusic(music: types.Music) void {
-    raylib.StopMusic(music);
+    raylib.StopMusicStream(music);
+}
+
+pub fn pauseMusic(music: types.Music) void {
+    raylib.PauseMusicStream(music);
+}
+
+pub fn resumeMusic(music: types.Music) void {
+    raylib.ResumeMusicStream(music);
 }
 
 pub fn updateMusic(music: types.Music) void {
-    raylib.UpdateMusic(music);
+    raylib.UpdateMusicStream(music);
+}
+
+pub fn isMusicPlaying(music: types.Music) void {
+    raylib.IsMusicStreamPlaying(music);
 }
