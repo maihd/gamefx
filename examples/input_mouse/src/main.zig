@@ -2,10 +2,6 @@ const std = @import("std");
 const gamefx = @import("gamefx");
 
 pub fn main() !void {
-    var buffer: [1024 * 1024]u8 = undefined;
-    var fba = std.heap.FixedBufferAllocator.init(&buffer);
-    const allocator = fba.allocator();
-
     var config = gamefx.Config{
         .title = "GameFX Input Mouse",
         .width = 800,
@@ -52,13 +48,13 @@ pub fn main() !void {
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
         gamefx.graphics.drawCircle(circle_position, circle_radius, circle_color);
 
-        var mouse_button_text = try std.fmt.allocPrintZ(allocator, "Left down: {}", .{ gamefx.input.isMouseDown(.left) });
+        var mouse_button_text = try gamefx.text.format("Left down: {}", .{ gamefx.input.isMouseDown(.left) });
         gamefx.graphics.drawText(mouse_button_text, .{ 5, 5 }, 20, gamefx.color32_gray);
 
-        var mouse_cursor_text = try std.fmt.allocPrintZ(allocator, "Cursor: {s}", .{ cursor_name });
+        var mouse_cursor_text = try gamefx.text.format("Cursor: {s}", .{ cursor_name });
         gamefx.graphics.drawText(mouse_cursor_text, .{ 5, 30 }, 20, gamefx.color32_gray);
 
-        var mouse_position_text = try std.fmt.allocPrintZ(allocator, "Position: {d:.1} - {d:.1}", .{ mouse_position[0], mouse_position[1] });
+        var mouse_position_text = try gamefx.text.format("Position: {d:.1} - {d:.1}", .{ mouse_position[0], mouse_position[1] });
         gamefx.graphics.drawText(mouse_position_text, .{ 5, 55 }, 20, gamefx.color32_gray);
     }
 }
