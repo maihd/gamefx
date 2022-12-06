@@ -1,5 +1,5 @@
 pub usingnamespace @import("types.zig");
-pub usingnamespace @import("window.zig");
+pub usingnamespace @import("system.zig");
 pub usingnamespace @import("constants.zig");
 
 pub const gui       = @import("gui.zig");

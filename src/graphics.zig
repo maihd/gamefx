@@ -1,12 +1,12 @@
 const raylib = @import("backends/raylib.zig");
-const window = @import("window.zig");
+const system = @import("system.zig");
 const types = @import("types.zig");
 
 // Drawing state
 
 pub fn newFrame() !void {
-    if (!window.isInit()) {
-        return error.WindowUnitialized;
+    if (!system.isInit()) {
+        return error.SystemUnitialized;
     }
 
     raylib.BeginDrawing();
