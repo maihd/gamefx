@@ -6,7 +6,7 @@ pub const Config = struct {
     title: []const u8,
     width: i32,
     height: i32,
-    framerate: i32 = 60
+    framerate: i32 = 60,
 };
 
 pub fn init(config: Config) !void {
@@ -27,12 +27,21 @@ pub fn init(config: Config) !void {
     }
 
     raylib.InitWindow(config.width, config.height, @ptrCast([*c]const u8, config.title));
-    raylib.SetTargetFPS(config.framerate);
+    if (!raylib.IsWindowReady()) {
+        return error.FailedToInitWindow;
+    }
 
+    raylib.InitAudioDevice();
+    if (!raylib.IsAudioDeviceReady()) {
+        return error.FailedToInitAudio;
+    }
+
+    raylib.SetTargetFPS(config.framerate);
     is_init = true;
 }
 
 pub fn deinit() void {
+    raylib.CloseAudioDevice();
     raylib.CloseWindow();
     is_init = false;
 }
