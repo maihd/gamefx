@@ -1,11 +1,51 @@
-pub const f32x2     = @Vector(2, f32);
-pub const f32x3     = @Vector(3, f32);
-pub const f32x4     = @Vector(4, f32);
+const raylib = @import("backends/raylib.zig");
 
-pub const Rect      = f32x4;
+// Math types
 
-pub const Color     = f32x4;
-pub const Color32   = @Vector(4, u8);
+pub const f32x2         = @Vector(2, f32);
+pub const f32x3         = @Vector(3, f32);
+pub const f32x4         = @Vector(4, f32);
+
+pub const f32x2x2       = [2]f32x2;
+pub const f32x3x3       = [3]f32x3;
+pub const f32x4x4       = [4]f32x4;
+
+// Graphics types
+
+pub const Rect          = f32x4;
+pub const BoundingBox   = raylib.BoundingBox;
+
+pub const Color         = f32x4;
+pub const Color32       = @Vector(4, u8);
+
+pub const Font          = raylib.Font;
+pub const GlyphInfo     = raylib.GlyphInfo;
+
+pub const Image         = raylib.Image;
+pub const Texture       = raylib.Texture;
+pub const NPatchInfo    = raylib.NPatchInfo;
+
+pub const Mesh          = raylib.Mesh;
+//pub const Model         = raylib.Model;
+//pub const ModelAnimation = raylib.ModelAnimation;
+
+pub const Camera        = raylib.Camera;
+pub const Camera2D      = raylib.Camera2D;
+
+pub const Shader        = raylib.Shader;
+pub const Material      = raylib.Material;
+pub const MaterialMap   = raylib.MaterialMap;
+
+pub const RenderTexture = raylib.RenderTexture;
+
+// Audio types
+
+pub const Wave          = raylib.Wave;
+pub const Music         = raylib.Music;
+pub const Sound         = raylib.Sound;
+pub const AudioStream   = raylib.AudioStream;
+
+// Input types
 
 pub const Key       = enum(c_int) {
     none            = 0,        // Key: NULL, used for no key pressed
@@ -151,7 +191,3 @@ pub const MouseCursor = enum(c_int) {
     resize_all    = 9,     // The omni-directional resize/move cursor shape
     not_allowed   = 10     // The operation-not-allowed shape
 };
-
-const raylib = @import("backends/raylib.zig");
-
-pub const Texture = raylib.Texture;
