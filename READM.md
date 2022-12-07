@@ -1,1 +1,0 @@
-MaiHD's Game Framework for small game development
