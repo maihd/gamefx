@@ -11,11 +11,17 @@ pub fn main() !void {
     });
     defer gamefx.deinit();
 
-    const music_background = try gamefx.assets.loadMusic(assets_dir ++ "/audios/music_gameplay.mp3");
+    try gamefx.assets.addSearchPath(assets_dir);
+    defer gamefx.assets.removeSearchPath(assets_dir);
+
+    const music_background = try gamefx.assets.loadMusic("audios/music_gameplay.mp3");
     defer gamefx.assets.unloadMusic(music_background);
 
     gamefx.audio.playMusic(music_background);
     defer gamefx.audio.stopMusic(music_background);
+
+    const player_texture = try gamefx.assets.loadTexture("sprites/player_main.png");
+    defer gamefx.assets.unloadTexture(player_texture);
 
     while (!gamefx.isClosing()) {
         gamefx.audio.updateMusic(music_background);
@@ -24,6 +30,7 @@ pub fn main() !void {
         defer gamefx.graphics.endFrame();
 
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
-        gamefx.graphics.drawText("Neon Shooter Game!", .{ 310, 220 }, 20, gamefx.color32_lightgray);
+        //gamefx.graphics.drawText("Neon Shooter Game!", .{ 310, 220 }, 20, gamefx.color32_lightgray);
+        gamefx.graphics.drawTexture(player_texture, .{ 310, 220 }, gamefx.color32_white);
     }
 }

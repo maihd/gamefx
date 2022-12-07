@@ -1,4 +1,5 @@
 const std = @import("std");
+const assets = @import("assets.zig");
 const raylib = @import("backends/raylib.zig");
 
 var is_init = false;
@@ -6,13 +7,16 @@ var is_init = false;
 var frame_buffer: ?[]u8 = null;
 var frame_allocator: std.heap.FixedBufferAllocator = undefined;
 
+var assets_allocator = std.heap.GeneralPurposeAllocator(.{}){};
+
 pub const Config = struct {
     title: []const u8,
     width: i32,
     height: i32,
+
     framerate: i32 = 60,
 
-    frame_buffer_size: u32 = 10 * 1024 * 1024,
+    frame_buffer_size: u32 = 10 * 1024 * 1024
 };
 
 pub fn init(config: Config) !void {
@@ -51,10 +55,19 @@ pub fn init(config: Config) !void {
     frame_buffer = try std.heap.page_allocator.alloc(u8, config.frame_buffer_size);
     frame_allocator = std.heap.FixedBufferAllocator.init(frame_buffer.?);
 
+    const allocator = assets_allocator.allocator();
+    try assets.init(allocator);
+
     is_init = true;
 }
 
 pub fn deinit() void {
+    assets.deinit();
+    const assets_leaked = assets_allocator.deinit();
+    if (assets_leaked) {
+        @panic("Assets Leaked!");
+    }
+
     std.heap.page_allocator.free(frame_buffer.?);
     frame_buffer = null;
 
