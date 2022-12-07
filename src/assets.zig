@@ -5,7 +5,7 @@ const raylib = @import("backends/raylib.zig");
 
 // Manage assets
 
-var search_paths: std.ArrayList([]u8) = undefined;
+var search_paths: std.ArrayList([]u8)       = undefined;
 var assets_allocator: std.mem.Allocator     = undefined;
 
 pub fn init(allocator: std.mem.Allocator) !void {
@@ -44,11 +44,11 @@ pub fn getExistsFilePath(path: []const u8) ?[]const u8 {
                 continue;
             };
 
-            var file = std.fs.openFileAbsolute(file_path, .{ .mode = .read_only }) catch {
+            const file = std.fs.openFileAbsolute(file_path, .{ .mode = .read_only }) catch {
                 continue;
             };
+            defer file.close();
 
-            file.close();
             return file_path;
         }
         
@@ -59,6 +59,33 @@ pub fn getExistsFilePath(path: []const u8) ?[]const u8 {
     return path;
 }
 
+pub fn getData(allocator: std.mem.Allocator, path: []const u8) ?[]u8 {
+    if (getExistsFilePath(path)) |file_path| {
+        const file = std.fs.openFileAbsolute(file_path, .{ .mode = .read_only }) catch {
+            return null;
+        };
+        defer file.close();
+
+        const stat = file.stat() catch {
+            return null;
+        };
+
+        var buffer = allocator.alloc(u8, @as(usize, stat.size)) catch { 
+            return null;
+        };
+        
+        const read_bytes = file.readAll(buffer) catch { 
+            return null;
+        };
+
+        return buffer[0..read_bytes];
+    } else {
+        return null;
+    }
+}
+
+// Utils
+
 // Manage font
 
 // Manage audio
@@ -68,7 +95,7 @@ pub fn loadSound(path: []const u8) !types.Sound {
         const sound = raylib.LoadSound(@ptrCast([*c]const u8, file_path));
         return if (sound.stream.buffer == null) error.FileNotFound else sound;
     } else {
-        return error.FileNotFound;
+        return error.AssetsNotFound;
     }
 }
 
@@ -81,7 +108,7 @@ pub fn loadMusic(path: []const u8) !types.Music {
         const music = raylib.LoadMusicStream(@ptrCast([*c]const u8, file_path));
         return if (music.stream.buffer == null) error.FileNotFound else music;
     } else {
-        return error.FileNotFound;
+        return error.AssetsNotFound;
     }
 }
 
@@ -93,13 +120,31 @@ pub fn unloadMusic(music: types.Music) void {
 
 // Manage texture
 
-pub fn loadTexture(path: []const u8) !types.Texture {
-    if (getExistsFilePath(path)) |file_path| {
-        const texture = raylib.LoadTexture(@ptrCast([*c]const u8, file_path));
-        return if (texture.id == 0) error.FileNotFound else texture;
+pub fn loadImage(path: []const u8) !types.Image {
+    if (getData(assets_allocator, path)) |data| {
+        const extension = @ptrCast([*c]const u8, std.fs.path.extension(path));
+        const image = raylib.LoadImageFromMemory(extension, data.ptr, @intCast(c_int, data.len));
+        if (image.data == null) {
+            assets_allocator.free(data);
+            return error.DecodeFailed;
+        } else {
+            return image;
+        }
     } else {
-        return error.FileNotFound;
+        return error.AssetsNotFound;
     }
+}
+
+pub fn unloadImage(image: types.Image) void {
+    raylib.UnloadImage(image);
+}
+
+pub fn loadTexture(path: []const u8) !types.Texture {
+    const image = try loadImage(path);
+    defer unloadImage(image);
+
+    const texture = raylib.LoadTextureFromImage(image);
+    return if (texture.id == 0) error.CreateFailed else texture;
 }
 
 pub fn unloadTexture(texture: types.Texture) void {
