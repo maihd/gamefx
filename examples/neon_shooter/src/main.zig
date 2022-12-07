@@ -30,7 +30,6 @@ pub fn main() !void {
         defer gamefx.graphics.endFrame();
 
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
-        //gamefx.graphics.drawText("Neon Shooter Game!", .{ 310, 220 }, 20, gamefx.color32_lightgray);
         gamefx.graphics.drawTexture(player_texture, .{ 310, 220 }, gamefx.color32_white);
     }
 }
