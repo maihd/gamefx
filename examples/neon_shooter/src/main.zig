@@ -4,11 +4,13 @@ const build_options = @import("build_options");
 const assets_dir = build_options.assets_dir;
 
 pub fn main() !void {
-    try gamefx.init(.{
+    const config = gamefx.Config{
         .title = "GameFX neon shooter",
         .width = 800,
         .height = 480
-    });
+    };
+
+    try gamefx.init(config);
     defer gamefx.deinit();
 
     try gamefx.assets.addSearchPath(assets_dir);
@@ -23,13 +25,28 @@ pub fn main() !void {
     const player_texture = try gamefx.assets.loadTexture("sprites/player_main.png");
     defer gamefx.assets.unloadTexture(player_texture);
 
+    var player_position = gamefx.f32x2{ @as(f32, @divExact(config.width, 2)), @as(f32, @divExact(config.height, 2)) };
+    var player_rotation = @as(f32, 0);
+
     while (!gamefx.isClosing()) {
+        // Moving player
+        if (gamefx.input.isKeyDown(.up)) {
+            player_rotation = 270;
+        } else if (gamefx.input.isKeyDown(.down)) {
+            player_rotation = 90;
+        } else if (gamefx.input.isKeyDown(.left)) {
+            player_rotation = 0;
+        } else if (gamefx.input.isKeyDown(.right)) {
+            player_rotation = 180;
+        }
+
+        // Continuous playing music
         gamefx.audio.updateMusic(music_background);
 
         try gamefx.graphics.newFrame();
         defer gamefx.graphics.endFrame();
 
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
-        gamefx.graphics.drawTexture(player_texture, .{ 310, 220 }, gamefx.color32_white);
+        gamefx.graphics.drawTextureEx(player_texture, player_position, player_rotation, 1.0, gamefx.color32_black);
     }
 }

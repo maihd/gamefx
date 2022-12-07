@@ -1,3 +1,4 @@
+const std = @import("std");
 const raylib = @import("backends/raylib.zig");
 const system = @import("system.zig");
 const types = @import("types.zig");
@@ -44,19 +45,50 @@ pub fn drawCircle(position: types.f32x2, radius: f32, color: types.Color32) void
 
 // Draw shapes
 
-pub fn drawTexture(texture: types.Texture, position: types.f32x2, color: types.Color32) void {
+pub fn drawTexture(texture: types.Texture, position: types.f32x2, tint: types.Color32) void {
     raylib.DrawTextureV(
         texture,                        // texture: raylib.Texture
         raylib.toVector2(position),     // position: raylib.Vector2
-        raylib.toColor(color)           // color: raylib.Color
+        raylib.toColor(tint)            // tint: raylib.Color
     );
 }
 
-pub fn drawTextureRect(texture: types.Texture, rect: types.Rect, position: types.f32x2, color: types.Color32) void {
+/// Draw texture with extended params
+/// texture - texture to draw
+/// position - position to draw
+/// rotation - rotation to draw, in degrees, clockwise
+/// scale - scale to draw 
+/// tint - tint color apply to texture
+pub fn drawTextureEx(texture: types.Texture, position: types.f32x2, rotation: f32, scale: f32, tint: types.Color32) void {
+    const frame_width = @intToFloat(f32, texture.width);
+    const frame_height = @intToFloat(f32, texture.height);
+    std.debug.print("DEBUG: frame_width={}, frame_height={}\n", .{ frame_width, frame_height });
+    
+    raylib.DrawTexturePro(
+        texture,                        // texture: raylib.Texture
+        .{
+            .x = 0,
+            .y = 0,
+            .width = frame_width,
+            .height = frame_height,
+        },
+        .{
+            .x = position[0],
+            .y = position[1],
+            .width = frame_width * scale,
+            .height = frame_height * scale
+        },
+        .{ .x = frame_width * scale * 0.5, .y = frame_height * scale * 0.5 },
+        rotation,                       // rotation: c_float
+        raylib.toColor(tint)            // tint: raylib.Color
+    );
+}
+
+pub fn drawTextureRect(texture: types.Texture, rect: types.Rect, position: types.f32x2, tint: types.Color32) void {
     raylib.DrawTextureRec(
         texture,                            // texture: raylib.Texture
         raylib.toRectangle(rect),           // rectangle: raylib.Rectangle
         raylib.toVector2(position),         // position: raylib.Vector2
-        raylib.toColor(color)               // color: raylib.Color
+        raylib.toColor(tint)                // tint: raylib.Color
     );
 }
