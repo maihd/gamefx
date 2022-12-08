@@ -47,6 +47,9 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
 
     linkSystemDeps(step);
 
+    const zmath = @import("libs/zig-gamedev/libs/zmath/build.zig");
+    step.addPackage(zmath.pkg);
+
     return step;
 }
 

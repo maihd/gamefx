@@ -1,4 +1,5 @@
 const types = @import("types.zig");
+const zmath = @import("zmath");
 
 // Contructors
 
@@ -29,3 +30,30 @@ pub fn f32x4s(s: f32) types.f32x4 {
 // Per types functions
 
 // Generic functions
+
+pub fn sin(v: anytype) @TypeOf(v) {
+    const T = @TypeOf(v);
+    return switch (T) {
+        f32, types.f32x4, types.f32x4x4 => zmath.sin(v),
+        types.f32x2, types.f32x3 => zmath.sin32xN(v),
+        else => @compileError("gamefx.math.sin() not implemented for " ++ @typeName(T)),
+    };
+}
+
+pub fn cos(v: anytype) @TypeOf(v) {
+    const T = @TypeOf(v);
+    return switch (T) {
+        f32, types.f32x4, types.f32x4x4 => zmath.cos(v),
+        types.f32x2, types.f32x3 => zmath.cos32xN(v),
+        else => @compileError("gamefx.math.sin() not implemented for " ++ @typeName(T)),
+    };
+}
+
+pub fn tan(v: anytype) @TypeOf(v) {
+    const T = @TypeOf(v);
+    return switch (T) {
+        f32, types.f32x4, types.f32x4x4 => zmath.tan(v),
+        types.f32x2, types.f32x3 => zmath.tan32xN(v),
+        else => @compileError("gamefx.math.sin() not implemented for " ++ @typeName(T)),
+    };
+}
