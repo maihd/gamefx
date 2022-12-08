@@ -1,7 +1,8 @@
-const std = @import("std");
+//const std = @import("std");
 const raylib = @import("backends/raylib.zig");
 const system = @import("system.zig");
 const types = @import("types.zig");
+const log = @import("log.zig");
 
 // Drawing state
 
@@ -62,7 +63,8 @@ pub fn drawTexture(texture: types.Texture, position: types.f32x2, tint: types.Co
 pub fn drawTextureEx(texture: types.Texture, position: types.f32x2, rotation: f32, scale: f32, tint: types.Color32) void {
     const frame_width = @intToFloat(f32, texture.width);
     const frame_height = @intToFloat(f32, texture.height);
-    std.debug.print("DEBUG: frame_width={}, frame_height={}\n", .{ frame_width, frame_height });
+    
+    log.debug("frame_width={}, frame_height={}", .{ frame_width, frame_height });
     
     raylib.DrawTexturePro(
         texture,                        // texture: raylib.Texture

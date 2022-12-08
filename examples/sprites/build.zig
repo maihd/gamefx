@@ -2,7 +2,7 @@ const std = @import("std");
 const gamefx = @import("../../build.zig");
 
 pub const name = "sprites";
-pub const assets_dir = "assets/";
+pub const assets_dir = "assets";
 
 pub fn build(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
     const src_dir = thisDir() ++ "/src";

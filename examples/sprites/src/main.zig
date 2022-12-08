@@ -16,7 +16,10 @@ pub fn main() !void {
     try gamefx.init(config);
     defer gamefx.deinit();
 
-    const texture = try gamefx.assets.loadTexture(assets_dir ++ "scarfy.png");
+    try gamefx.assets.addSearchPath(assets_dir);
+    defer gamefx.assets.removeSearchPath(assets_dir);
+
+    const texture = try gamefx.assets.loadTexture(assets_dir ++ "/" ++ "bg_loading.png");
     defer gamefx.assets.unloadTexture(texture);
 
     const frame_width = @min(texture.width, texture.height);
@@ -58,6 +61,8 @@ pub fn main() !void {
             @intToFloat(f32, frame_height)
         };
 
-        gamefx.graphics.drawTextureRect(texture, frame_rect, texture_position, gamefx.color32_white);
+        _ = frame_rect;
+        gamefx.graphics.drawTexture(texture, texture_position, gamefx.color32_white);
+        //gamefx.graphics.drawTextureRect(texture, frame_rect, texture_position, gamefx.color32_white);
     }
 }
