@@ -7,7 +7,7 @@ pub const pkg = std.build.Pkg{
 
 pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
-    const mode = .ReleaseFast;//b.standardReleaseOptions();
+    const mode = .Debug;//b.standardReleaseOptions();
     const step = stepGameFX(b, target, mode);
     step.install();
 

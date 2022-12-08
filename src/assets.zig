@@ -38,7 +38,7 @@ pub fn removeSearchPath(path: []const u8) void {
 }
 
 pub fn getExistsFilePath(path: []const u8) ?[]const u8 {
-    var file = std.fs.openFileAbsolute(path, .{ .mode = .read_only }) catch {
+    var file = std.fs.cwd().openFile(path, .{ .mode = .read_only }) catch {
         for (search_paths.items) |search_path| {
             const file_path = text.format("{s}/{s}", .{ search_path, path }) catch {
                 continue;
@@ -122,10 +122,11 @@ pub fn unloadMusic(music: types.Music) void {
 
 pub fn loadImage(path: []const u8) !types.Image {
     if (getData(assets_allocator, path)) |data| {
+        defer assets_allocator.free(data);
+
         const extension = @ptrCast([*c]const u8, std.fs.path.extension(path));
         const image = raylib.LoadImageFromMemory(extension, data.ptr, @intCast(c_int, data.len));
         if (image.data == null) {
-            assets_allocator.free(data);
             return error.DecodeFailed;
         } else {
             return image;
