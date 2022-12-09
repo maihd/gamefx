@@ -4,3 +4,6 @@
 [submodule "libs/raygui"]
 	path = libs/raygui
 	url = https://github.com/raysan5/raygui
+[submodule "libs/zig-gamedev"]
+	path = libs/zig-gamedev
+	url = https://github.com/michal-z/zig-gamedev

@@ -7,7 +7,7 @@ pub const pkg = std.build.Pkg{
 
 pub fn build(b: *std.build.Builder) void {
     const target = b.standardTargetOptions(.{});
-    const mode = .ReleaseFast;//b.standardReleaseOptions();
+    const mode = .Debug;//b.standardReleaseOptions();
     const step = stepGameFX(b, target, mode);
     step.install();
 
@@ -22,12 +22,18 @@ pub fn build(b: *std.build.Builder) void {
 
     // Example applications
 
-    installExample(b, example_neon_shooter.build(b, target, mode), example_neon_shooter.name);
-    installExample(b, example_basic_window.build(b, target, mode), example_basic_window.name);
-    installExample(b, example_input_mouse.build(b, target, mode), example_input_mouse.name);
-    installExample(b, example_input_keys.build(b, target, mode), example_input_keys.name);
-    installExample(b, example_gui_demo.build(b, target, mode), example_gui_demo.name);
-    installExample(b, example_sprites.build(b, target, mode), example_sprites.name);
+    const examples = .{
+        @import("examples/neon_shooter/build.zig"),
+        @import("examples/basic_window/build.zig"),
+        @import("examples/input_mouse/build.zig"),
+        @import("examples/input_keys/build.zig"),
+        @import("examples/gui_demo/build.zig"),
+        @import("examples/sprites/build.zig"),
+        @import("examples/2048/build.zig"),
+    };
+    inline for (examples) |example| {
+        installExample(b, example.build(b, target, mode), example.name);
+    }
 }
 
 pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
@@ -40,6 +46,9 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
     step.addIncludePath(thisDir() ++ "/libs/raygui/src");
 
     linkSystemDeps(step);
+
+    const zmath = @import("libs/zig-gamedev/libs/zmath/build.zig");
+    step.addPackage(zmath.pkg);
 
     return step;
 }
@@ -176,10 +185,3 @@ pub fn installExample(b: *std.build.Builder, exe: *std.build.LibExeObjStep, comp
 inline fn thisDir() []const u8 {
     return comptime std.fs.path.dirname(@src().file) orelse ".";
 }
-
-const example_neon_shooter = @import("examples/neon_shooter/build.zig");
-const example_basic_window = @import("examples/basic_window/build.zig");
-const example_input_mouse = @import("examples/input_mouse/build.zig");
-const example_input_keys = @import("examples/input_keys/build.zig");
-const example_gui_demo = @import("examples/gui_demo/build.zig");
-const example_sprites = @import("examples/sprites/build.zig");
