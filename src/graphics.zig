@@ -7,14 +7,24 @@ const constants = @import("constants.zig");
 
 // Draw commands
 
+pub const DrawRectCmd = struct {
+    position: types.f32x2   = undefined,
+    size: types.f32x2       = undefined,
+    color: types.Color32    = undefined,
+    
+    scale: types.f32x2      = .{ 1.0, 1.0 },
+    origin: types.f32x2     = .{ 0.5, 0.5 },
+    rotation: f32           = 0.0,
+};
+
 pub const DrawTextureCmd = struct {
     texture: types.Texture  = undefined,
     position: types.f32x2   = undefined,
 
     rect: types.f32x4       = .{ 0.0, 0.0, 1.0, 1.0 },
-    rotation: f32           = 0.0,
-    scale: f32              = 1.0,
+    scale: types.f32x2      = .{ 1.0, 1.0 },
     origin: types.f32x2     = .{ 0.5, 0.5 },
+    rotation: f32           = 0.0,
     tint: types.Color32     = constants.color32_white,
 };
 
@@ -92,6 +102,23 @@ pub fn drawText(text: []const u8, position: types.f32x2, font_size: f32, color: 
 
 // Draw shapes
 
+pub fn drawRect(cmd: DrawRectCmd) void {
+    const draw_size     = cmd.size * cmd.scale;
+    const draw_origin   = draw_size * cmd.origin;
+
+    raylib.DrawRectanglePro(
+        .{
+            .x      = cmd.position[0],
+            .y      = cmd.position[1],
+            .width  = draw_size[0],
+            .height = draw_size[1],
+        },
+        raylib.toVector2(draw_origin),  // origin: raylib.Vector2
+        cmd.rotation,                   // rotation: c_float
+        raylib.toColor(cmd.color)       // color: raylib.Color
+    );
+}
+
 pub fn drawCircle(position: types.f32x2, radius: f32, color: types.Color32) void {
     raylib.DrawCircleV(
         raylib.toVector2(position),     // position: raylib.Vector2
@@ -111,8 +138,8 @@ pub fn drawTexture(cmd: DrawTextureCmd) void {
     const tile_width = cmd.rect[2] * texture_width;
     const tile_height = cmd.rect[3] * texture_height;
 
-    const draw_width = tile_width * cmd.scale;
-    const draw_height = tile_height * cmd.scale;
+    const draw_width = tile_width * cmd.scale[0];
+    const draw_height = tile_height * cmd.scale[1];
     
     raylib.DrawTexturePro(
         cmd.texture,                            // texture: raylib.Texture
