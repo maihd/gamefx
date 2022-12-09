@@ -38,13 +38,15 @@ pub fn removeSearchPath(path: []const u8) void {
 }
 
 pub fn getExistsFilePath(path: []const u8) ?[]const u8 {
-    var file = std.fs.cwd().openFile(path, .{ .mode = .read_only }) catch {
+    const cwd = std.fs.cwd();
+
+    const file = cwd.openFile(path, .{ .mode = .read_only }) catch {
         for (search_paths.items) |search_path| {
             const file_path = text.format("{s}/{s}", .{ search_path, path }) catch {
                 continue;
             };
 
-            const file = std.fs.openFileAbsolute(file_path, .{ .mode = .read_only }) catch {
+            const file = cwd.openFile(file_path, .{ .mode = .read_only }) catch {
                 continue;
             };
             defer file.close();
@@ -61,7 +63,7 @@ pub fn getExistsFilePath(path: []const u8) ?[]const u8 {
 
 pub fn getData(allocator: std.mem.Allocator, path: []const u8) ?[]u8 {
     if (getExistsFilePath(path)) |file_path| {
-        const file = std.fs.openFileAbsolute(file_path, .{ .mode = .read_only }) catch {
+        const file = std.fs.cwd().openFile(file_path, .{ .mode = .read_only }) catch {
             return null;
         };
         defer file.close();
@@ -70,7 +72,7 @@ pub fn getData(allocator: std.mem.Allocator, path: []const u8) ?[]u8 {
             return null;
         };
 
-        var buffer = allocator.alloc(u8, @as(usize, stat.size)) catch { 
+        const buffer = allocator.alloc(u8, @as(usize, stat.size)) catch { 
             return null;
         };
         

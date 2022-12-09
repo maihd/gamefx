@@ -47,6 +47,12 @@ pub fn main() !void {
         defer gamefx.graphics.endFrame();
 
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
-        gamefx.graphics.drawTextureEx(player_texture, player_position, player_rotation, 1.0, gamefx.color32_black);
+        gamefx.graphics.drawTexture(.{
+            .texture    = player_texture, 
+            .position   = player_position, 
+            .rotation   = player_rotation, 
+            .scale      = 1.0, 
+            .tint       = gamefx.color32_black
+        });
     }
 }

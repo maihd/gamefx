@@ -19,22 +19,22 @@ pub fn main() !void {
     try gamefx.assets.addSearchPath(assets_dir);
     defer gamefx.assets.removeSearchPath(assets_dir);
 
-    const texture = try gamefx.assets.loadTexture(assets_dir ++ "/" ++ "bg_loading.png");
+    const texture = try gamefx.assets.loadTexture(assets_dir ++ "/" ++ "scarfy_origin.png");
     defer gamefx.assets.unloadTexture(texture);
 
     const frame_width = @min(texture.width, texture.height);
     const frame_height = frame_width;
 
+    const frame_tile_x = @intToFloat(f32, frame_width) / @intToFloat(f32, texture.width);
+    const frame_tile_y = @intToFloat(f32, frame_height) / @intToFloat(f32, texture.height);
+
     var frame_index: i32 = 0;
     var frame_timer: f32 = 0.0;
 
-    const frame_count: i32 = @divExact(@max(texture.width, texture.height), frame_width);
+    const frame_count: i32 = @divFloor(@max(texture.width, texture.height), frame_width);
     const frame_rate: f32 = 1.0 / @intToFloat(f32, frame_count);
 
-    const texture_position = gamefx.f32x2{ 
-        @intToFloat(f32, @divExact(config.width - frame_width, 2)),
-        @intToFloat(f32, @divExact(config.height - frame_height, 2))
-    };
+    const texture_position = gamefx.graphics.getScreenSize() * gamefx.math.f32x2s(0.5);
 
     while (!gamefx.isClosing()) {
         frame_timer += gamefx.getDeltaTime();
@@ -50,19 +50,21 @@ pub fn main() !void {
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
 
         const frame_rect: gamefx.Rect = if (texture.width > texture.height) .{
-            @intToFloat(f32, frame_index * frame_width),
+            @intToFloat(f32, frame_index) * frame_tile_x,
             0,
-            @intToFloat(f32, frame_width),
-            @intToFloat(f32, frame_height)
+            frame_tile_x,
+            frame_tile_y
         } else .{
             0,
-            @intToFloat(f32, frame_index * frame_width),
-            @intToFloat(f32, frame_width),
-            @intToFloat(f32, frame_height)
+            @intToFloat(f32, frame_index) * frame_tile_y,
+            frame_tile_x,
+            frame_tile_y
         };
 
-        _ = frame_rect;
-        gamefx.graphics.drawTexture(texture, texture_position, gamefx.color32_white);
-        //gamefx.graphics.drawTextureRect(texture, frame_rect, texture_position, gamefx.color32_white);
+        gamefx.graphics.drawTexture(.{
+            .texture = texture, 
+            .position = texture_position,
+            .rect = frame_rect
+        });
     }
 }
