@@ -51,7 +51,7 @@ pub fn main() !void {
             .texture    = player_texture, 
             .position   = player_position, 
             .rotation   = player_rotation, 
-            .scale      = 1.0, 
+            .scale      = .{ 1.0, 1.0 }, 
             .tint       = gamefx.color32_black
         });
     }

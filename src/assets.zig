@@ -90,12 +90,25 @@ pub fn getData(allocator: std.mem.Allocator, path: []const u8) ?[]u8 {
 
 // Manage font
 
+pub fn loadFont(path: []const u8) !types.Font {
+    if (getExistsFilePath(path)) |file_path| {
+        const font = raylib.LoadFont(@ptrCast([*c]const u8, file_path));
+        return if (font.texture.id == 0) error.DecodeFailed else font;
+    } else {
+        return error.AssetsNotFound;
+    }
+}
+
+pub fn unloadFont(font: types.Font) void {
+    raylib.UnloadFont(font);
+}
+
 // Manage audio
 
 pub fn loadSound(path: []const u8) !types.Sound {
     if (getExistsFilePath(path)) |file_path| {
         const sound = raylib.LoadSound(@ptrCast([*c]const u8, file_path));
-        return if (sound.stream.buffer == null) error.FileNotFound else sound;
+        return if (sound.stream.buffer == null) error.DecodeFailed else sound;
     } else {
         return error.AssetsNotFound;
     }
@@ -108,7 +121,7 @@ pub fn unloadSound(sound: types.Sound) void {
 pub fn loadMusic(path: []const u8) !types.Music {
     if (getExistsFilePath(path)) |file_path| {
         const music = raylib.LoadMusicStream(@ptrCast([*c]const u8, file_path));
-        return if (music.stream.buffer == null) error.FileNotFound else music;
+        return if (music.stream.buffer == null) error.DecodeFailed else music;
     } else {
         return error.AssetsNotFound;
     }

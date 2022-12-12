@@ -1,4 +1,5 @@
 const std = @import("std");
+const log = @import("log.zig");
 const assets = @import("assets.zig");
 const raylib = @import("backends/raylib.zig");
 
@@ -101,6 +102,7 @@ pub fn init(config: Config) !void {
     }
 
     raylib.SetTargetFPS(config.framerate);
+    //raylib.SetTraceLogLevel(raylib.LOG_DEBUG);
 
     is_init = true;
 }
@@ -169,7 +171,7 @@ pub fn getFrameAllocator() std.mem.Allocator {
 
 // For backends
 
-export fn gamefxBackendAlloc(size: usize) callconv(.C) ?*anyopaque {
+export fn gamefxBackendMalloc(size: usize) callconv(.C) ?*anyopaque {
     const buffer = backend_allocator.?.alignedAlloc(u8, 16, size) catch {
         @panic("Backend: out of memory");
         //return null;
@@ -189,7 +191,7 @@ export fn gamefxBackendFree(maybe_ptr: ?*anyopaque) callconv(.C) void {
 
 export fn gamefxBackendCalloc(nitems: usize, size: usize) callconv(.C) ?*anyopaque {
     const buffer_size = nitems * size;
-    if (gamefxBackendAlloc(buffer_size)) |buffer| {
+    if (gamefxBackendMalloc(buffer_size)) |buffer| {
         return buffer;
     } else {
         return null;
