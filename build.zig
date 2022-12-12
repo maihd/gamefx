@@ -122,6 +122,9 @@ pub fn link(exe: *std.build.LibExeObjStep) void {
     exe.addIncludePath(thisDir() ++ "/libs/raylib/src");
     exe.addIncludePath(thisDir() ++ "/libs/raygui/src");
 
+    const zmath = @import("libs/zig-gamedev/libs/zmath/build.zig");
+    exe.addPackage(zmath.pkg);
+
     linkSystemDeps(exe);
 }
 
