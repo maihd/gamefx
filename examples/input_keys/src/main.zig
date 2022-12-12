@@ -37,6 +37,10 @@ pub fn main() !void {
         defer gamefx.graphics.endFrame();
 
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
-        gamefx.graphics.drawCircle(circle_position, 30.0, circle_color);
+        gamefx.graphics.drawCircle(.{
+            .center = circle_position, 
+            .radius = 30.0, 
+            .color = circle_color
+        });
     }
 }

@@ -46,15 +46,34 @@ pub fn main() !void {
         defer gamefx.graphics.endFrame();
         
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
-        gamefx.graphics.drawCircle(circle_position, circle_radius, circle_color);
+        gamefx.graphics.drawCircle(.{
+            .center = circle_position, 
+            .radius = circle_radius, 
+            .color = circle_color
+        });
 
-        var mouse_button_text = try gamefx.text.format("Left down: {}", .{ gamefx.input.isMouseDown(.left) });
-        gamefx.graphics.drawText(mouse_button_text, .{ 5, 5 }, 20, gamefx.color32_gray);
+        gamefx.graphics.drawText(.{
+            .text = try gamefx.text.format("Left down: {}", .{ gamefx.input.isMouseDown(.left) }), 
+            .position = .{ 5, 5 }, 
+            .font_size = 20, 
+            .origin = .{ 0, 0 },
+            .tint = gamefx.color32_gray
+        });
 
-        var mouse_cursor_text = try gamefx.text.format("Cursor: {s}", .{ cursor_name });
-        gamefx.graphics.drawText(mouse_cursor_text, .{ 5, 30 }, 20, gamefx.color32_gray);
+        gamefx.graphics.drawText(.{
+            .text = try gamefx.text.format("Cursor: {s}", .{ cursor_name }), 
+            .position = .{ 5, 30 }, 
+            .font_size = 20, 
+            .origin = .{ 0, 0 },
+            .tint = gamefx.color32_gray
+        });
 
-        var mouse_position_text = try gamefx.text.format("Position: {d:.1} - {d:.1}", .{ mouse_position[0], mouse_position[1] });
-        gamefx.graphics.drawText(mouse_position_text, .{ 5, 55 }, 20, gamefx.color32_gray);
+        gamefx.graphics.drawText(.{
+            .text = try gamefx.text.format("Position: {d:.1} - {d:.1}", .{ mouse_position[0], mouse_position[1] }),
+            .position = .{ 5, 55 },
+            .font_size = 20, 
+            .origin = .{ 0, 0 },
+            .tint = gamefx.color32_gray
+        });
     }
 }

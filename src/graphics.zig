@@ -17,6 +17,16 @@ pub const DrawRectCmd = struct {
     rotation: f32           = 0.0,
 };
 
+pub const DrawCircleCmd = struct {
+    center: types.f32x2, 
+    radius: f32, 
+    color: types.Color32,
+
+    start_angle: f32    = 0,
+    end_angle: f32      = 360,
+    segments: i32       = 60
+};
+
 pub const DrawTextCmd = struct {
     text: []const u8, 
     position: types.f32x2, 
@@ -141,11 +151,14 @@ pub fn drawRect(cmd: DrawRectCmd) void {
     );
 }
 
-pub fn drawCircle(position: types.f32x2, radius: f32, color: types.Color32) void {
-    raylib.DrawCircleV(
-        raylib.toVector2(position),     // position: raylib.Vector2
-        radius,                         // radius: c_float
-        raylib.toColor(color)           // color: raylib.Color
+pub fn drawCircle(cmd: DrawCircleCmd) void {
+    raylib.DrawCircleSector(
+        raylib.toVector2(cmd.center),   // position: raylib.Vector2
+        cmd.radius,                     // radius: c_float
+        cmd.start_angle,                // startAngle: c_float
+        cmd.end_angle,                  // endAngle: c_float
+        cmd.segments,                   // segments: c_float
+        raylib.toColor(cmd.color)       // color: raylib.Color
     );
 }
 
