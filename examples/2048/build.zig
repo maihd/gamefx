@@ -5,7 +5,7 @@ pub const name = "2048";
 
 pub fn build(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
     const src_dir = thisDir() ++ "/src";
-    const exe = b.addExecutable("basic_window", src_dir ++ "/main.zig");
+    const exe = b.addExecutable("2048", src_dir ++ "/main.zig");
     exe.setTarget(target);
     exe.setBuildMode(mode);
 
