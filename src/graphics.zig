@@ -8,9 +8,9 @@ const constants = @import("constants.zig");
 // Draw commands
 
 pub const DrawRectCmd = struct {
-    position: types.f32x2   = undefined,
-    size: types.f32x2       = undefined,
-    color: types.Color32    = undefined,
+    position: types.f32x2,
+    size: types.f32x2,
+    color: types.Color32,
     
     scale: types.f32x2      = .{ 1.0, 1.0 },
     origin: types.f32x2     = .{ 0.5, 0.5 },
@@ -18,8 +18,8 @@ pub const DrawRectCmd = struct {
 };
 
 pub const DrawTextureCmd = struct {
-    texture: types.Texture  = undefined,
-    position: types.f32x2   = undefined,
+    texture: types.Texture,
+    position: types.f32x2,
 
     rect: types.f32x4       = .{ 0.0, 0.0, 1.0, 1.0 },
     scale: types.f32x2      = .{ 1.0, 1.0 },
