@@ -18,7 +18,10 @@ var default_backend_allocator_heap = std.heap.GeneralPurposeAllocator(.{}){};
 const default_backend_allocator = default_backend_allocator_heap.allocator();
 
 var assets_allocator: std.mem.Allocator = undefined;
-var backend_allocator: std.mem.Allocator = undefined;
+
+var backend_allocator: ?std.mem.Allocator               = null;
+var backend_allocations: ?std.AutoHashMap(usize, usize) = null;
+
 
 // Native bindings
 
@@ -26,7 +29,7 @@ comptime {
     @import("meta/calloc.zig").wrapAllocator(struct {
         pub fn getAllocator(self: @This()) std.mem.Allocator {
             _ = self;
-            return backend_allocator;
+            return std.heap.c_allocator;
         }
     }).exportAs(.{
         .malloc     = "gamefx_backend_malloc",
@@ -67,6 +70,25 @@ pub fn init(config: Config) !void {
     if (config.framerate <= 0) {
         return error.FramerateInvalid;
     }
+    
+    // Prepairing allocators
+
+    backend_allocator = config.backend_allocator;
+    backend_allocations = std.AutoHashMap(usize, usize).init(config.backend_allocator);
+    try backend_allocations.?.ensureTotalCapacity(16);
+
+    if (config.frame_buffer) |buffer| {
+        frame_allocator = std.heap.FixedBufferAllocator.init(buffer);
+    } else {
+        const frame_buffer_size = 10 * 1024 * 1024;
+        frame_buffer = try std.heap.page_allocator.alloc(u8, frame_buffer_size);
+        frame_allocator = std.heap.FixedBufferAllocator.init(frame_buffer.?);
+    }
+    
+    assets_allocator = config.assets_allocator;
+    try assets.init(assets_allocator);
+
+    // Init submodules
 
     raylib.InitWindow(config.width, config.height, @ptrCast([*c]const u8, config.title));
     if (!raylib.IsWindowReady()) {
@@ -80,23 +102,14 @@ pub fn init(config: Config) !void {
 
     raylib.SetTargetFPS(config.framerate);
 
-    if (config.frame_buffer) |buffer| {
-        frame_allocator = std.heap.FixedBufferAllocator.init(buffer);
-    } else {
-        const frame_buffer_size = 10 * 1024 * 1024;
-        frame_buffer = try std.heap.page_allocator.alloc(u8, frame_buffer_size);
-        frame_allocator = std.heap.FixedBufferAllocator.init(frame_buffer.?);
-    }
-    
-    assets_allocator = config.assets_allocator;
-    try assets.init(assets_allocator);
-
-    backend_allocator = config.backend_allocator;
-
     is_init = true;
 }
 
 pub fn deinit() void {
+    // Deinit submodules
+    raylib.CloseAudioDevice();
+    raylib.CloseWindow();
+
     // Cleanup assets
     assets.deinit();
 
@@ -114,8 +127,20 @@ pub fn deinit() void {
         frame_buffer = null;
     }
 
-    raylib.CloseAudioDevice();
-    raylib.CloseWindow();
+    // Cleanup backend allocations
+    if (backend_allocator) |allocator| {
+        backend_allocations.?.deinit();
+        backend_allocations = null;
+
+        if (std.meta.eql(allocator, default_backend_allocator)) {
+            const backend_leaked = default_backend_allocator_heap.deinit();
+            if (backend_leaked) {
+                @panic("Backends Leaked!");
+            }
+        }
+    }
+
+    // Done.
     is_init = false;
 }
 
@@ -144,31 +169,48 @@ pub fn getFrameAllocator() std.mem.Allocator {
 
 // For backends
 
-// export fn backendAlloc(size: usize) ?[*]u8 {
-//     const buffer = backend_allocator.alloc(u8, size) catch {
-//         return null;
-//     };
+export fn gamefxBackendAlloc(size: usize) callconv(.C) ?*anyopaque {
+    const buffer = backend_allocator.?.alignedAlloc(u8, 16, size) catch {
+        @panic("Backend: out of memory");
+        //return null;
+    };
 
-//     return buffer.ptr;
-// }
+    backend_allocations.?.put(@ptrToInt(buffer.ptr), size) catch @panic("Backend: out of memory");
+    return buffer.ptr;
+}
 
-// export fn backendFree(memory: ?[*]u8) void {
-//     backend_allocator.free(memory);
-// }
+export fn gamefxBackendFree(maybe_ptr: ?*anyopaque) callconv(.C) void {
+    if (maybe_ptr) |ptr| {
+        const size = backend_allocations.?.fetchRemove(@ptrToInt(ptr)).?.value;
+        const buffer = @ptrCast([*]align(16) u8, @alignCast(16, ptr))[0..size];
+        backend_allocator.?.free(buffer);
+    }
+}
 
-// export fn backendCalloc(nitems: usize, size: usize) callconv(.C) ?[*]u8 {
-//     const buffer_size = nitems * size;
-//     if (backendAlloc(buffer_size)) |buffer| {
-//         return buffer;
-//     } else {
-//         return null;
-//     }
-// }
+export fn gamefxBackendCalloc(nitems: usize, size: usize) callconv(.C) ?*anyopaque {
+    const buffer_size = nitems * size;
+    if (gamefxBackendAlloc(buffer_size)) |buffer| {
+        return buffer;
+    } else {
+        return null;
+    }
+}
 
-// export fn backendRealloc(old_mem: ?[*]u8, new_n: usize) callconv(.C) ?[*]u8 {
-//     const buffer = backend_allocator.realloc(old_mem, new_n) catch {
-//         return null;
-//     };
+export fn gamefxBackendRealloc(ptr: ?*anyopaque, size: usize) callconv(.C) ?*anyopaque {
+    const old_size = if (ptr != null) backend_allocations.?.get(@ptrToInt(ptr.?)).? else 0;
+    const old_mem = if (old_size > 0)
+        @ptrCast([*]align(16) u8, @alignCast(16, ptr))[0..old_size]
+    else
+        @as([*]align(16) u8, undefined)[0..0];
 
-//     return buffer.ptr;
-// }
+    const new_mem = backend_allocator.?.realloc(old_mem, size) catch @panic("Backend: out of memory");
+
+    if (ptr != null) {
+        const removed = backend_allocations.?.remove(@ptrToInt(ptr.?));
+        std.debug.assert(removed);
+    }
+
+    backend_allocations.?.put(@ptrToInt(new_mem.ptr), size) catch @panic("Backend: out of memory");
+
+    return new_mem.ptr;
+}
