@@ -13,6 +13,11 @@ pub fn main() !void {
         defer gamefx.graphics.endFrame();
 
         gamefx.graphics.clearBackground(gamefx.color32_raywhite);
-        gamefx.graphics.drawText("Congrats! You created your first window!", gamefx.math.f32x2(190, 200), 20, gamefx.color32_lightgray);
+        gamefx.graphics.drawText(.{
+            .text = "Congrats! You created your first window!", 
+            .position = .{ 400, 240 }, 
+            .font_size = 20, 
+            .tint = gamefx.color32_lightgray
+        });
     }
 }

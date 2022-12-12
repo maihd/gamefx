@@ -17,6 +17,18 @@ pub const DrawRectCmd = struct {
     rotation: f32           = 0.0,
 };
 
+pub const DrawTextCmd = struct {
+    text: []const u8, 
+    position: types.f32x2, 
+    font_size: f32, 
+    tint: types.Color32,
+    
+    font: ?types.Font       = null,
+    origin: types.f32x2     = .{ 0.5, 0.5 },
+    rotation: f32           = 0.0,
+    spacing: f32            = 1.0
+};
+
 pub const DrawTextureCmd = struct {
     texture: types.Texture,
     position: types.f32x2,
@@ -90,13 +102,23 @@ pub fn getRenderSize() types.f32x2 {
 
 // Draw text
 
-pub fn drawText(text: []const u8, position: types.f32x2, font_size: f32, color: types.Color32) void {
-    raylib.DrawText(
-        @ptrCast([*c]const u8, text),       // text: const c_char*
-        @floatToInt(c_int, position[0]),    // posX: c_int
-        @floatToInt(c_int, position[1]),    // posY: c_int
-        @floatToInt(c_int, font_size),      // fontSize: c_int
-        raylib.toColor(color)               // color: raylib.Color
+pub fn drawText(cmd: DrawTextCmd) void {
+    const font = cmd.font orelse raylib.GetFontDefault();
+
+    const text_sentinel = @ptrCast([*c]const u8, cmd.text);
+    const text_size = raylib.MeasureTextEx(font, text_sentinel, cmd.font_size, cmd.spacing);
+    raylib.DrawTextPro(
+        font,                               // font: raylib.Font
+        text_sentinel,                      // text: const c_char*
+        raylib.toVector2(cmd.position),     // position: raylib.Vector2
+        .{                                  // origin: raylib.Vector2
+            .x = text_size.x * cmd.origin[0],
+            .y = text_size.y * cmd.origin[1]
+        },
+        cmd.rotation,                       // rotation: c_float
+        cmd.font_size,                      // fontSize: c_float
+        cmd.spacing,                        // spacing: c_float
+        raylib.toColor(cmd.tint)            // tint: raylib.Color
     );
 }
 
