@@ -1,8 +1,13 @@
 const std = @import("std");
-const math = @import("tests/math.zig");
+
+// Test deps
+
+test {
+    std.testing.refAllDecls(@import("zmath"));
+}
 
 // Math unit tests
 
 test {
-    std.testing.refAllDecls(math);
+    std.testing.refAllDecls(@import("tests/math.zig"));
 }
