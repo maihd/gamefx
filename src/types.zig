@@ -15,6 +15,10 @@ comptime {
     assert(@sizeOf(f32x2) == 2 * @sizeOf(f32));
     assert(@sizeOf(f32x3) == 4 * @sizeOf(f32));
     assert(@sizeOf(f32x4) == 4 * @sizeOf(f32));
+
+    assert(@sizeOf(f32x2x2) ==  4 * @sizeOf(f32));
+    assert(@sizeOf(f32x3x3) == 16 * @sizeOf(f32));
+    assert(@sizeOf(f32x4x4) == 16 * @sizeOf(f32));
 }
 
 // Graphics types
