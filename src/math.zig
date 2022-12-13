@@ -1,5 +1,6 @@
-const types = @import("types.zig");
+const std = @import("std");
 const zmath = @import("zmath");
+const types = @import("types.zig");
 
 // Contructors
 
@@ -27,9 +28,15 @@ pub fn f32x4s(s: f32) types.f32x4 {
     return types.f32x4{ s, s, s, s };
 }
 
-// Per types functions
+// Common functions
 
-// Generic functions
+pub const approxEqAbs = zmath.approxEqAbs;
+
+pub fn isClose(a: anytype, b: @TypeOf(a)) bool {
+    return approxEqAbs(a, b, std.math.f32_epsilon);
+}
+
+// Graphics functions
 
 pub fn sin(v: anytype) @TypeOf(v) {
     const T = @TypeOf(v);
@@ -59,4 +66,46 @@ pub fn tan(v: anytype) @TypeOf(v) {
         types.f32x3 => .{ @tan(v[0]), @tan(v[1]), @tan(v[2]) },
         else => @compileError("gamefx.math.sin() not implemented for " ++ @typeName(T)),
     };
+}
+
+fn mulRetType(comptime Ta: type, comptime Tb: type) type {
+    if (Ta == types.f32x4x4 and Tb == types.f32x4x4) {
+        return types.f32x4x4;
+    } else if ((Ta == f32 and Tb == types.f32x4x4) or (Ta == types.f32x4x4 and Tb == f32)) {
+        return types.f32x4x4;
+    } else if ((Ta == types.f32x4 and Tb == types.f32x4x4) or (Ta == types.f32x4x4 and Tb == types.f32x4)) {
+        return types.f32x4;
+    } else if ((Ta == types.f32x3 and Tb == types.f32x4x4) or (Ta == types.f32x4x4 and Tb == types.f32x3)) {
+        return types.f32x3;
+    } else if ((Ta == types.f32x2 and Tb == types.f32x4x4) or (Ta == types.f32x4x4 and Tb == types.f32x2)) {
+        return types.f32x2;
+    }
+
+    @compileError("gamefx.math.mul() not implemented for types: " ++ @typeName(Ta) ++ @typeName(Tb));
+}
+
+pub fn mul(a: anytype, b: anytype) mulRetType(@TypeOf(a), @TypeOf(b)) {
+    const Ta = @TypeOf(a);
+    const Tb = @TypeOf(b);
+    if (Ta == types.f32x4x4 and Tb == types.f32x4x4) {
+        return zmath.mul(a, b);
+    } else if ((Ta == f32 and Tb == types.f32x4x4) or (Ta == types.f32x4x4 and Tb == f32)) {
+        return zmath.mul(a, b);
+    } else if ((Ta == types.f32x4 and Tb == types.f32x4x4) or (Ta == types.f32x4x4 and Tb == types.f32x4)) {
+        return zmath.mul(a, b);
+    } else if (Ta == types.f32x3 and Tb == types.f32x4x4) {
+        const v4 = zmath.mul(types.f32x4{ a[0], a[1], a[2], 1.0 }, b);
+        return types.f32x3{ v4[0], v4[1], v4[2] };
+    } else if (Ta == types.f32x4x4 and Tb == types.f32x3) {
+        const v4 = zmath.mul(a, types.f32x4{ b[0], b[1], b[2], 1.0 });
+        return types.f32x3{ v4[0], v4[1], v4[2] };
+    } else if (Ta == types.f32x2 and Tb == types.f32x4x4) {
+        const v4 = zmath.mul(types.f32x4{ a[0], a[1], 0.0, 1.0 }, b);
+        return types.f32x3{ v4[0], v4[1] };
+    } else if (Ta == types.f32x4x4 and Tb == types.f32x2) {
+        const v4 = zmath.mul(a, types.f32x4{ b[0], b[1], 0.0, 1.0 });
+        return types.f32x3{ v4[0], v4[1] };
+    }
+
+    @compileError("gamefx.math.mul() not implemented for types: " ++ @typeName(Ta) ++ ", " ++ @typeName(Tb));
 }

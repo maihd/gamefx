@@ -6,9 +6,9 @@ pub const f32x2         = @Vector(2, f32);
 pub const f32x3         = @Vector(3, f32);
 pub const f32x4         = @Vector(4, f32);
 
-pub const f32x2x2       = @Vector(4, f32);
-pub const f32x3x3       = @Vector(9, f32);
-pub const f32x4x4       = @Vector(16, f32);
+pub const f32x2x2       = [2]f32x2;
+pub const f32x3x3       = [3]f32x3;
+pub const f32x4x4       = [4]f32x4;
 
 comptime {
     const assert = @import("std").debug.assert;
@@ -17,7 +17,7 @@ comptime {
     assert(@sizeOf(f32x4) == 4 * @sizeOf(f32));
 
     assert(@sizeOf(f32x2x2) ==  4 * @sizeOf(f32));
-    assert(@sizeOf(f32x3x3) == 16 * @sizeOf(f32));
+    assert(@sizeOf(f32x3x3) == 12 * @sizeOf(f32));
     assert(@sizeOf(f32x4x4) == 16 * @sizeOf(f32));
 }
 
