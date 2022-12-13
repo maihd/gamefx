@@ -47,9 +47,9 @@ pub fn main() !void {
             player_velocity[0] += 10;
         }
 
-        if (gamefx.math.lengthSq2(player_velocity)[0] > 0) {
+        if (!gamefx.math.isLengthZero2(player_velocity)) {
             player_rotation  = gamefx.math.angleDeg2(player_velocity);
-            player_position += gamefx.math.fromAngleLengthDeg2(player_rotation, 300 * gamefx.getDeltaTime());
+            player_position += gamefx.math.vec2FromDegrees(player_rotation, 300 * gamefx.getDeltaTime());
         }
 
         // Continuous playing music

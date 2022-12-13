@@ -32,13 +32,41 @@ pub inline fn vec4s(s: f32) types.Vec {
     return zmath.f32x4s(s);
 }
 
-// Common functions
+// Extended functions
 
 pub inline fn isClose(a: anytype, b: @TypeOf(a)) bool {
-    return zmath.isNearEqual(a, b, std.math.f32_epsilon);
+    return zmath.approxEqAbs(a, b, std.math.f32_epsilon);
 }
 
-// Graphics functions
+pub inline fn isNearZero(v: anytype) bool {
+    return isClose(v, zmath.splat(@TypeOf(v), 0.0));
+}
+
+pub inline fn isLengthZero2(v: anytype) bool {
+    return isClose(zmath.lengthSq2(v), zmath.splat(@TypeOf(v), 0.0));
+}
+
+pub inline fn isLengthZero3(v: anytype) bool {
+    return isClose(zmath.lengthSq3(v), zmath.splat(@TypeOf(v), 0.0));
+}
+
+pub inline fn isLengthZero4(v: anytype) bool {
+    return isClose(zmath.lengthSq4(v), zmath.splat(@TypeOf(v), 0.0));
+}
+
+pub inline fn setLength2(v: types.Vec, length: f32) types.Vec {
+    return zmath.normalize2(v) * vec2s(length);
+}
+
+pub inline fn setLength3(v: types.Vec, length: f32) types.Vec {
+    return zmath.normalize3(v) * vec3s(length);
+}
+
+pub inline fn setLength4(v: types.Vec, length: f32) types.Vec {
+    return zmath.normalize4(v) * vec4s(length);
+}
+
+// 2D Graphics functions
 
 pub inline fn degToRad(angle: f32) f32 {
     return angle * std.math.pi / 180.0;
@@ -56,24 +84,12 @@ pub inline fn angleDeg2(v: types.Vec) f32 {
     return radToDeg(angleRad2(v));
 }
 
-pub inline fn setLength2(v: types.Vec, length: f32) types.Vec {
-    return zmath.normalize2(v) * vec2s(length);
+pub inline fn vec2FromRadians(radians: f32, length: f32) types.Vec {
+    const rad = radians;
+    return vec2(zmath.cos(rad) * length, zmath.sin(rad) * length);
 }
 
-pub inline fn setLength3(v: types.Vec, length: f32) types.Vec {
-    return zmath.normalize3(v) * vec3s(length);
-}
-
-pub inline fn setLength4(v: types.Vec, length: f32) types.Vec {
-    return zmath.normalize4(v) * vec4s(length);
-}
-
-pub inline fn fromAngleLengthRad2(angle: f32, length: f32) types.Vec {
-    const rad = angle;
-    return vec2(@cos(rad) * length, @sin(rad) * length);
-}
-
-pub inline fn fromAngleLengthDeg2(angle: f32, length: f32) types.Vec {
-    const rad = degToRad(angle);
-    return vec2(@cos(rad) * length, @sin(rad) * length);
+pub inline fn vec2FromDegrees(degrees: f32, length: f32) types.Vec {
+    const rad = degToRad(degrees);
+    return vec2(zmath.cos(rad) * length, zmath.sin(rad) * length);
 }
