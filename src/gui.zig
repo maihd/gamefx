@@ -156,7 +156,7 @@ pub fn Toggle(text: []const u8, bounds: types.Rect, active: bool) bool {
     );
 }
 
-pub fn ToggleGroup(text: []const u8, bounds: types.Rect, active: i32) i32 {
+pub fn ToggleGroup(text: []const u8, bounds: types.Rect, active: u32) u32 {
     const current_active = raylib.GuiToggleGroup(
         .{                              // bounds: raylib.Rectangle
             .x      = bounds[0],
@@ -168,7 +168,7 @@ pub fn ToggleGroup(text: []const u8, bounds: types.Rect, active: i32) i32 {
         @as(c_int, active)              // active: c_int
     );
 
-    return @as(i32, current_active);
+    return @as(u32, current_active);
 }
 
 pub fn CheckBox(text: []const u8, bounds: types.Rect, checked: bool) bool {
@@ -184,7 +184,7 @@ pub fn CheckBox(text: []const u8, bounds: types.Rect, checked: bool) bool {
     );
 }
 
-pub fn ComboBox(text: []const u8, bounds: types.Rect, active: i32) i32 {
+pub fn ComboBox(text: []const u8, bounds: types.Rect, active: u32) u32 {
     const current_active = raylib.GuiComboBox(
         .{                              // bounds: raylib.Rectangle
             .x      = bounds[0],
@@ -196,5 +196,5 @@ pub fn ComboBox(text: []const u8, bounds: types.Rect, active: i32) i32 {
         @as(c_int, active)              // active: c_int
     );
 
-    return @as(i32, current_active);
+    return @as(u32, current_active);
 }
