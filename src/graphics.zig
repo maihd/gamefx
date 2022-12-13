@@ -5,22 +5,30 @@ const types = @import("types.zig");
 const log = @import("log.zig");
 const constants = @import("constants.zig");
 
+// Types
+
+const Vec       = types.Vec;
+const Rect      = types.Rect;
+const Font      = types.Font;
+const Color32   = types.Color32;
+const Texture   = types.Texture;
+
 // Draw commands
 
 pub const DrawRectCmd = struct {
-    position: types.f32x2,
-    size: types.f32x2,
-    color: types.Color32,
+    position: Vec,
+    size: Vec,
+    color: Color32,
     
-    scale: types.f32x2      = .{ 1.0, 1.0 },
-    origin: types.f32x2     = .{ 0.5, 0.5 },
+    scale: Vec              = .{ 1.0, 1.0, 1.0, 1.0 },
+    origin: Vec             = .{ 0.5, 0.5, 0.5, 0.5 },
     rotation: f32           = 0.0,
 };
 
 pub const DrawCircleCmd = struct {
-    center: types.f32x2, 
+    center: Vec, 
     radius: f32, 
-    color: types.Color32,
+    color: Color32,
 
     start_angle: f32    = 0,
     end_angle: f32      = 360,
@@ -29,25 +37,25 @@ pub const DrawCircleCmd = struct {
 
 pub const DrawTextCmd = struct {
     text: []const u8, 
-    position: types.f32x2, 
+    position: Vec, 
     font_size: f32, 
-    tint: types.Color32,
+    tint: Color32,
     
-    font: ?types.Font       = null,
-    origin: types.f32x2     = .{ 0.5, 0.5 },
+    font: ?Font             = null,
+    origin: Vec             = .{ 0.5, 0.5, 0.5, 0.5 },
     rotation: f32           = 0.0,
     spacing: f32            = 1.0
 };
 
 pub const DrawTextureCmd = struct {
-    texture: types.Texture,
-    position: types.f32x2,
+    texture: Texture,
+    position: Vec,
 
-    rect: types.f32x4       = .{ 0.0, 0.0, 1.0, 1.0 },
-    scale: types.f32x2      = .{ 1.0, 1.0 },
-    origin: types.f32x2     = .{ 0.5, 0.5 },
+    rect: Vec               = .{ 0.0, 0.0, 1.0, 1.0 },
+    scale: Vec              = .{ 1.0, 1.0, 1.0, 1.0 },
+    origin: Vec             = .{ 0.5, 0.5, 0.5, 0.5 },
     rotation: f32           = 0.0,
-    tint: types.Color32     = constants.color32_white,
+    tint: Color32           = constants.color32_white,
 };
 
 // Drawing state
@@ -64,11 +72,11 @@ pub fn endFrame() void {
     raylib.EndDrawing();
 }
 
-pub fn clearBackground(color: types.Color32) void {
+pub fn clearBackground(color: Color32) void {
     raylib.ClearBackground(raylib.toColor(color));
 }
 
-pub fn drawBackground(texture: types.Texture, tint: types.Color32) void {
+pub fn drawBackground(texture: Texture, tint: Color32) void {
     const screen_size = getScreenSize();
     
     raylib.DrawTexturePro(
@@ -96,14 +104,14 @@ pub fn drawBackground(texture: types.Texture, tint: types.Color32) void {
 
 // Graphics state
 
-pub fn getScreenSize() types.f32x2 {
+pub fn getScreenSize() Vec {
     return .{
         @intToFloat(f32, raylib.GetScreenWidth()),
         @intToFloat(f32, raylib.GetScreenHeight()),
     };
 }
 
-pub fn getRenderSize() types.f32x2 {
+pub fn getRenderSize() Vec {
     return .{
         @intToFloat(f32, raylib.GetRenderWidth()),
         @intToFloat(f32, raylib.GetRenderHeight()),

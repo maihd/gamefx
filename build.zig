@@ -1,8 +1,12 @@
 const std = @import("std");
+const zmath = @import("libs/zig-gamedev/libs/zmath/build.zig");
 
 pub const pkg = std.build.Pkg{
     .name = "gamefx",
     .source = .{ .path = thisDir() ++ "/src/main.zig" },
+    .dependencies = &[_]std.build.Pkg{
+        zmath.pkg,
+    }, 
 };
 
 pub fn build(b: *std.build.Builder) void {
@@ -37,9 +41,11 @@ pub fn build(b: *std.build.Builder) void {
 }
 
 pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
-    const step = b.addStaticLibrary("gamefx", pkg.source.path);
+    const step = b.addStaticLibrary(pkg.name, pkg.source.path);
     step.setBuildMode(mode);
     step.setTarget(target);
+
+    // Main backend: raylib
 
     step.linkLibC();
     step.addIncludePath(thisDir() ++ "/libs/raylib/src");
@@ -47,7 +53,8 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
 
     linkSystemDeps(step);
 
-    const zmath = @import("libs/zig-gamedev/libs/zmath/build.zig");
+    // Sub backends: zmath, zgui, ztracy, zjobs, zpool
+
     step.addPackage(zmath.pkg);
 
     return step;
@@ -122,8 +129,8 @@ pub fn link(exe: *std.build.LibExeObjStep) void {
     exe.addIncludePath(thisDir() ++ "/libs/raylib/src");
     exe.addIncludePath(thisDir() ++ "/libs/raygui/src");
 
-    const zmath = @import("libs/zig-gamedev/libs/zmath/build.zig");
     exe.addPackage(zmath.pkg);
+    exe.addPackage(pkg);
 
     linkSystemDeps(exe);
 }

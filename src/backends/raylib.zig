@@ -8,12 +8,10 @@ const raylib = @cImport({
     @cInclude("raygui.h");
 });
 
-pub inline fn toVector2(v: anytype) raylib.Vector2 {
-    const Type = @TypeOf(v);
-    return switch (Type) {
-        types.f32x2 => .{ .x = v[0], .y = v[1] },
-        else => @compileError("Cannot convert to raylib.Vector2")  
-    };
+// Convert functions
+
+pub inline fn toVector2(vec: types.Vec) raylib.Vector2 {
+    return .{ .x = vec[0], .y = vec[1] };
 }
 
 pub inline fn toColor(v: anytype) raylib.Color {
@@ -37,16 +35,11 @@ pub inline fn toColor(v: anytype) raylib.Color {
     };
 }
 
-pub inline fn toRectangle(v: anytype) raylib.Rectangle {
-    const Type = @TypeOf(v);
-    return switch (Type) {
-        types.Rect => .{
-            .x      = v[0], 
-            .y      = v[1], 
-            .width  = v[2], 
-            .height = v[3]
-        },
-
-        else => @compileError("Cannot convert to raylib.Color")  
+pub inline fn toRectangle(rect: types.Rect) raylib.Rectangle {
+    return .{
+        .x      = rect[0], 
+        .y      = rect[1], 
+        .width  = rect[2], 
+        .height = rect[3]
     };
 }

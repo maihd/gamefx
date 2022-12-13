@@ -25,19 +25,31 @@ pub fn main() !void {
     const player_texture = try gamefx.assets.loadTexture("sprites/player_main.png");
     defer gamefx.assets.unloadTexture(player_texture);
 
-    var player_position = gamefx.f32x2{ @as(f32, @divExact(config.width, 2)), @as(f32, @divExact(config.height, 2)) };
+    var player_position = gamefx.math.vec2(@as(f32, @divExact(config.width, 2)), @as(f32, @divExact(config.height, 2)));
     var player_rotation = @as(f32, 0);
 
     while (!gamefx.isClosing()) {
         // Moving player
+        var player_velocity = gamefx.math.vec2(0, 0);
         if (gamefx.input.isKeyDown(.up)) {
-            player_rotation = 270;
-        } else if (gamefx.input.isKeyDown(.down)) {
-            player_rotation = 90;
-        } else if (gamefx.input.isKeyDown(.left)) {
-            player_rotation = 0;
-        } else if (gamefx.input.isKeyDown(.right)) {
-            player_rotation = 180;
+            player_velocity[1] -= 10;
+        }
+        
+        if (gamefx.input.isKeyDown(.down)) {
+            player_velocity[1] += 10;
+        }
+        
+        if (gamefx.input.isKeyDown(.left)) {
+            player_velocity[0] -= 10;
+        } 
+        
+        if (gamefx.input.isKeyDown(.right)) {
+            player_velocity[0] += 10;
+        }
+
+        if (gamefx.math.lengthSq2(player_velocity)[0] > 0) {
+            player_rotation  = gamefx.math.angleDeg2(player_velocity);
+            player_position += gamefx.math.fromAngleLengthDeg2(player_rotation, 300 * gamefx.getDeltaTime());
         }
 
         // Continuous playing music
@@ -46,13 +58,12 @@ pub fn main() !void {
         try gamefx.graphics.newFrame();
         defer gamefx.graphics.endFrame();
 
-        gamefx.graphics.clearBackground(gamefx.color32_raywhite);
+        gamefx.graphics.clearBackground(gamefx.color32_black);
         gamefx.graphics.drawTexture(.{
             .texture    = player_texture, 
             .position   = player_position, 
             .rotation   = player_rotation, 
-            .scale      = .{ 1.0, 1.0 }, 
-            .tint       = gamefx.color32_black
+            .scale      = gamefx.math.vec2s(1.0), 
         });
     }
 }

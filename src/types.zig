@@ -1,33 +1,19 @@
+const zmath = @import("zmath");
 const raylib = @import("backends/raylib.zig");
 
 // Math types
 
-pub const f32x2         = @Vector(2, f32);
-pub const f32x3         = @Vector(3, f32);
-pub const f32x4         = @Vector(4, f32);
-
-pub const f32x2x2       = [2]f32x2;
-pub const f32x3x3       = [3]f32x3;
-pub const f32x4x4       = [4]f32x4;
-
-comptime {
-    const assert = @import("std").debug.assert;
-    assert(@sizeOf(f32x2) == 2 * @sizeOf(f32));
-    assert(@sizeOf(f32x3) == 4 * @sizeOf(f32));
-    assert(@sizeOf(f32x4) == 4 * @sizeOf(f32));
-
-    assert(@sizeOf(f32x2x2) ==  4 * @sizeOf(f32));
-    assert(@sizeOf(f32x3x3) == 12 * @sizeOf(f32));
-    assert(@sizeOf(f32x4x4) == 16 * @sizeOf(f32));
-}
+pub const Vec           = zmath.Vec;
+pub const Mat           = zmath.Mat;
+pub const Quat          = zmath.Quat;
 
 // Graphics types
 
-pub const Rect          = f32x4;
+pub const Rect          = Vec;
 pub const BoundingBox   = raylib.BoundingBox;
 
-pub const Color         = f32x4;
-pub const Color32       = @Vector(4, u8);
+pub const Color         = Vec;
+pub const Color32       = [4]u8;
 
 pub const Font          = raylib.Font;
 pub const GlyphInfo     = raylib.GlyphInfo;
