@@ -1,16 +1,18 @@
 const zmath = @import("zmath");
 const raylib = @import("backends/raylib.zig");
 
-// Math types
+// Math types: mainly geometry components
 
 pub const Vec           = zmath.Vec;
 pub const Mat           = zmath.Mat;
 pub const Quat          = zmath.Quat;
 
-// Graphics types
+// Shapes & geometry
 
 pub const Rect          = Vec;
 pub const BoundingBox   = raylib.BoundingBox;
+
+// Graphics types
 
 pub const Color         = Vec;
 pub const Color32       = [4]u8;

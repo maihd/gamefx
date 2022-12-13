@@ -3,17 +3,28 @@ const text = @import("text.zig");
 const types = @import("types.zig");
 const raylib = @import("backends/raylib.zig");
 
+// Types
+
+const Texture = types.Texture;
+
 // Manage assets
 
-var search_paths: std.ArrayList([]u8)       = undefined;
-var assets_allocator: std.mem.Allocator     = undefined;
+var assets_allocator: std.mem.Allocator         = undefined;
+
+var search_paths: std.ArrayList([]u8)           = undefined;
+
+var texture_cache: std.StringHashMap(Texture)   = undefined;
 
 pub fn init(allocator: std.mem.Allocator) !void {
-    search_paths = std.ArrayList([]u8).init(allocator);
     assets_allocator = allocator;
+
+    search_paths = std.ArrayList([]u8).init(allocator);
+
+    texture_cache = std.StringHashMap(Texture).init(allocator);
 }
 
 pub fn deinit() void {
+    texture_cache.deinit();
     search_paths.deinit();
 }
 
@@ -156,11 +167,24 @@ pub fn unloadImage(image: types.Image) void {
 }
 
 pub fn loadTexture(path: []const u8) !types.Texture {
-    const image = try loadImage(path);
-    defer unloadImage(image);
+    if (getExistsFilePath(path)) |file_path| {
+        if (texture_cache.get(file_path)) |texture| {
+            return texture;
+        }
 
-    const texture = raylib.LoadTextureFromImage(image);
-    return if (texture.id == 0) error.CreateFailed else texture;
+        const image = try loadImage(path);
+        defer unloadImage(image);
+
+        const texture = raylib.LoadTextureFromImage(image);
+        if (texture.id == 0) {
+            return error.CreateFailed;
+        }
+
+        try texture_cache.put(file_path, texture);
+        return texture;
+    } else {
+        return error.AssetsNotFound;
+    }
 }
 
 pub fn unloadTexture(texture: types.Texture) void {

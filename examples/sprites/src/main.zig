@@ -34,7 +34,7 @@ pub fn main() !void {
     const frame_count: i32 = @divFloor(@max(texture.width, texture.height), frame_width);
     const frame_rate: f32 = 1.0 / @intToFloat(f32, frame_count);
 
-    const texture_position = gamefx.graphics.getScreenSize() * gamefx.math.f32x2s(0.5);
+    const texture_position = gamefx.graphics.getScreenSize() * gamefx.math.vec2s(0.5);
 
     while (!gamefx.isClosing()) {
         frame_timer += gamefx.getDeltaTime();
@@ -62,9 +62,9 @@ pub fn main() !void {
         };
 
         gamefx.graphics.drawTexture(.{
-            .texture = texture, 
-            .position = texture_position,
-            .rect = frame_rect
+            .texture    = texture, 
+            .position   = texture_position,
+            .rect       = frame_rect
         });
     }
 }

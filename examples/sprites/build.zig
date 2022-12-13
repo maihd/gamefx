@@ -18,7 +18,6 @@ pub fn build(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.built
     exe.setBuildMode(mode);
 
     gamefx.link(exe);
-    exe.addPackage(gamefx.pkg);
 
     return exe;
 }
