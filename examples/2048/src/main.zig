@@ -73,3 +73,51 @@ pub fn main() !void {
         }
     }
 }
+
+const BoardState = struct {
+    data: [rows][cols]u32,
+
+    const Self = @This();
+    
+    const cols = 4;
+    const rows = 4;
+
+    pub fn moveLeft() bool {
+        return false;
+    }
+
+    pub fn moveRight() bool {
+        return false;
+    }
+
+    pub fn moveUp() bool {
+        return false;
+    } 
+
+    pub fn moveDown() bool {
+        return false;
+    }
+
+    pub fn isEnd() bool {
+        return !moveLeft() and !moveRight() and !moveUp() and !moveDown();
+    }
+};
+test "Board.moveLeft()" {
+
+}
+
+test "Board.moveRight()" {
+
+}
+
+test "Board.moveUp()" {
+
+}
+
+test "Board.moveDown()" {
+    
+}
+
+test "Board.isEnd()" {
+    
+}
