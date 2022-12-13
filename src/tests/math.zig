@@ -40,9 +40,53 @@ test "math.f32x4s" {
 
 // Triangular
 
-// test "math.cos" {
-//     try testing.expectEqual(
-//         math.cos(math.f32x2(1.0, 1.0)),
-//         types.f32x2{ @cos(1.0), @cos(1.0) }
-//     );
-// }
+test "math.sin" {
+    try testing.expectEqual(
+        math.sin(math.f32x2(1.0, 1.0)),
+        types.f32x2{ @sin(1.0), @sin(1.0) }
+    );
+    
+    try testing.expectEqual(
+        math.sin(math.f32x3(1.0, 1.0, 1.0)),
+        types.f32x3{ @sin(1.0), @sin(1.0), @sin(1.0) }
+    );
+    
+    try testing.expectEqual(
+        math.sin(math.f32x4(1.0, 1.0, 1.0, 1.0)),
+        types.f32x4{ @sin(1.0), @sin(1.0), @sin(1.0), @sin(1.0) }
+    );
+}
+
+test "math.cos" {
+    try testing.expectEqual(
+        math.cos(math.f32x2(1.0, 1.0)),
+        types.f32x2{ @cos(1.0), @cos(1.0) }
+    );
+    
+    try testing.expectEqual(
+        math.cos(math.f32x3(1.0, 1.0, 1.0)),
+        types.f32x3{ @cos(1.0), @cos(1.0), @cos(1.0) }
+    );
+    
+    try testing.expectEqual(
+        math.cos(math.f32x4(1.0, 1.0, 1.0, 1.0)),
+        types.f32x4{ @cos(1.0), @cos(1.0), @cos(1.0), @cos(1.0) }
+    );
+}
+
+test "math.tan" {
+    try testing.expectEqual(
+        math.tan(math.f32x2(1.0, 1.0)),
+        types.f32x2{ @tan(1.0), @tan(1.0) }
+    );
+    
+    try testing.expectEqual(
+        math.tan(math.f32x3(1.0, 1.0, 1.0)),
+        types.f32x3{ @tan(1.0), @tan(1.0), @tan(1.0) }
+    );
+    
+    try testing.expectEqual(
+        math.tan(math.f32x4(1.0, 1.0, 1.0, 1.0)),
+        types.f32x4{ @tan(1.0), @tan(1.0), @tan(1.0), @tan(1.0) }
+    );
+}

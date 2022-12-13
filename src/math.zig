@@ -35,7 +35,8 @@ pub fn sin(v: anytype) @TypeOf(v) {
     const T = @TypeOf(v);
     return switch (T) {
         f32, types.f32x4, types.f32x4x4 => zmath.sin(v),
-        types.f32x2, types.f32x3 => zmath.sin32xN(v),
+        types.f32x2 => .{ @sin(v[0]), @sin(v[1]) },
+        types.f32x3 => .{ @sin(v[0]), @sin(v[1]), @sin(v[2]) },
         else => @compileError("gamefx.math.sin() not implemented for " ++ @typeName(T)),
     };
 }
@@ -44,7 +45,8 @@ pub fn cos(v: anytype) @TypeOf(v) {
     const T = @TypeOf(v);
     return switch (T) {
         f32, types.f32x4, types.f32x4x4 => zmath.cos(v),
-        types.f32x2, types.f32x3 => zmath.cos32xN(v),
+        types.f32x2 => .{ @cos(v[0]), @cos(v[1]) },
+        types.f32x3 => .{ @cos(v[0]), @cos(v[1]), @cos(v[2]) },
         else => @compileError("gamefx.math.sin() not implemented for " ++ @typeName(T)),
     };
 }
@@ -52,8 +54,9 @@ pub fn cos(v: anytype) @TypeOf(v) {
 pub fn tan(v: anytype) @TypeOf(v) {
     const T = @TypeOf(v);
     return switch (T) {
-        f32, types.f32x4, types.f32x4x4 => zmath.tan(v),
-        types.f32x2, types.f32x3 => zmath.tan32xN(v),
+        f32, types.f32x4, types.f32x4x4 => @tan(v),
+        types.f32x2 => .{ @tan(v[0]), @tan(v[1]) },
+        types.f32x3 => .{ @tan(v[0]), @tan(v[1]), @tan(v[2]) },
         else => @compileError("gamefx.math.sin() not implemented for " ++ @typeName(T)),
     };
 }
