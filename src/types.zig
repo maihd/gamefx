@@ -10,6 +10,13 @@ pub const f32x2x2       = @Vector(4, f32);
 pub const f32x3x3       = @Vector(9, f32);
 pub const f32x4x4       = @Vector(16, f32);
 
+comptime {
+    const assert = @import("std").debug.assert;
+    assert(@sizeOf(f32x2) == 2 * @sizeOf(f32));
+    assert(@sizeOf(f32x3) == 4 * @sizeOf(f32));
+    assert(@sizeOf(f32x4) == 4 * @sizeOf(f32));
+}
+
 // Graphics types
 
 pub const Rect          = f32x4;
