@@ -66,5 +66,13 @@ pub fn main() !void {
             .position   = texture_position,
             .rect       = frame_rect
         });
+
+        gamefx.graphics.drawText(.{
+            .text       = try gamefx.text.format("Frame: {}/{}", .{ frame_index, frame_count }),
+            .position   = gamefx.math.vec2(5, 5),
+            .font_size  = 20,
+            .tint       = gamefx.color32_darkgray,
+            .origin     = gamefx.math.vec2s(0.0)
+        });
     }
 }
