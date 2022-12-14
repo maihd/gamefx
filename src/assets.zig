@@ -5,7 +5,14 @@ const raylib = @import("backends/raylib.zig");
 
 // Types
 
-const Texture = types.Texture;
+const Font      = types.Font;
+
+const Wave      = types.Wave;
+const Sound     = types.Sound;
+const Music     = types.Music;
+
+const Image     = types.Image;
+const Texture   = types.Texture;
 
 // Manage assets
 
@@ -13,6 +20,7 @@ var assets_allocator: std.mem.Allocator         = undefined;
 
 var search_paths: std.ArrayList([]u8)           = undefined;
 
+var wave_cache: std.StringHashMap(Wave)         = undefined;
 var texture_cache: std.StringHashMap(Texture)   = undefined;
 
 pub fn init(allocator: std.mem.Allocator) !void {
@@ -20,11 +28,14 @@ pub fn init(allocator: std.mem.Allocator) !void {
 
     search_paths = std.ArrayList([]u8).init(allocator);
 
+    wave_cache = std.StringHashMap(Wave).init(allocator);
     texture_cache = std.StringHashMap(Texture).init(allocator);
 }
 
 pub fn deinit() void {
     texture_cache.deinit();
+    wave_cache.deinit();
+
     search_paths.deinit();
 }
 
@@ -101,7 +112,7 @@ pub fn getData(allocator: std.mem.Allocator, path: []const u8) ?[]u8 {
 
 // Manage font
 
-pub fn loadFont(path: []const u8) !types.Font {
+pub fn loadFont(path: []const u8) !Font {
     if (getExistsFilePath(path)) |file_path| {
         const font = raylib.LoadFont(@ptrCast([*c]const u8, file_path));
         return if (font.texture.id == 0) error.DecodeFailed else font;
@@ -110,26 +121,50 @@ pub fn loadFont(path: []const u8) !types.Font {
     }
 }
 
-pub fn unloadFont(font: types.Font) void {
+pub fn unloadFont(font: Font) void {
     raylib.UnloadFont(font);
 }
 
 // Manage audio
 
-pub fn loadSound(path: []const u8) !types.Sound {
+pub fn loadWave(path: []const u8) Wave {
     if (getExistsFilePath(path)) |file_path| {
-        const sound = raylib.LoadSound(@ptrCast([*c]const u8, file_path));
-        return if (sound.stream.buffer == null) error.DecodeFailed else sound;
+        if (wave_cache.get(file_path)) |wave| {
+            return wave;
+        }
+
+        const wave = raylib.LoadWave(@ptrCast([*c]const u8, file_path));
+        return if (wave.data == null) error.DecodeFailed else wave;
     } else {
         return error.AssetsNotFound;
     }
 }
 
-pub fn unloadSound(sound: types.Sound) void {
+pub fn unloadWave(wave: Wave) void {
+    var iterator = wave_cache.iterator();
+    while (iterator.next()) |entry| {
+        if (entry.value_ptr.data == wave.data) {
+            texture_cache.removeByPtr(entry.key_ptr);
+            break;
+        }
+    }
+
+    raylib.UnloadWave(wave);
+}
+
+pub fn loadSound(path: []const u8) !Sound {
+    const wave = try loadWave(path);
+    // no unload here, wave is cached
+
+    const sound = raylib.LoadSoundFromWave(wave);
+    return if (sound.stream.buffer == null) error.CreateFailed else sound;
+}
+
+pub fn unloadSound(sound: Sound) void {
     raylib.UnloadSound(sound);
 }
 
-pub fn loadMusic(path: []const u8) !types.Music {
+pub fn loadMusic(path: []const u8) !Music {
     if (getExistsFilePath(path)) |file_path| {
         const music = raylib.LoadMusicStream(@ptrCast([*c]const u8, file_path));
         return if (music.stream.buffer == null) error.DecodeFailed else music;
@@ -138,7 +173,7 @@ pub fn loadMusic(path: []const u8) !types.Music {
     }
 }
 
-pub fn unloadMusic(music: types.Music) void {
+pub fn unloadMusic(music: Music) void {
     raylib.UnloadMusicStream(music);
 }
 
@@ -146,7 +181,7 @@ pub fn unloadMusic(music: types.Music) void {
 
 // Manage texture
 
-pub fn loadImage(path: []const u8) !types.Image {
+pub fn loadImage(path: []const u8) !Image {
     if (getData(assets_allocator, path)) |data| {
         defer assets_allocator.free(data);
 
@@ -162,20 +197,17 @@ pub fn loadImage(path: []const u8) !types.Image {
     }
 }
 
-pub fn unloadImage(image: types.Image) void {
+pub fn unloadImage(image: Image) void {
     raylib.UnloadImage(image);
 }
 
-pub fn loadTexture(path: []const u8) !types.Texture {
+pub fn loadTexture(path: []const u8) !Texture {
     if (getExistsFilePath(path)) |file_path| {
         if (texture_cache.get(file_path)) |texture| {
             return texture;
         }
 
-        const image = try loadImage(path);
-        defer unloadImage(image);
-
-        const texture = raylib.LoadTextureFromImage(image);
+        const texture = raylib.LoadTexture(@ptrCast([*c]const u8, file_path));
         if (texture.id == 0) {
             return error.CreateFailed;
         }
@@ -187,6 +219,14 @@ pub fn loadTexture(path: []const u8) !types.Texture {
     }
 }
 
-pub fn unloadTexture(texture: types.Texture) void {
+pub fn unloadTexture(texture: Texture) void {
+    var iterator = texture_cache.iterator();
+    while (iterator.next()) |entry| {
+        if (entry.value_ptr.id == texture.id) {
+            texture_cache.removeByPtr(entry.key_ptr);
+            break;
+        }
+    }
+
     raylib.UnloadTexture(texture);
 }
