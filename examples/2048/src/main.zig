@@ -122,8 +122,39 @@ const BoardState = struct {
         return result;
     }
 
-    pub fn moveRight() bool {
-        return false;
+    pub fn moveRight(self: *Self) bool {
+        var result = false;
+
+        for (self.data) |*row| {
+            var i: i32 = cols - 2;
+            i_loop: while (i >= 0) : (i -= 1) {
+                var j: i32 = i + 1;
+                while (j < cols) : (j += 1) {
+                    const idx_i = @intCast(usize, i);
+                    const idx_j = @intCast(usize, j);
+
+                    if (row[idx_i] == row[idx_j]) {
+                        row[idx_j] *= 2;
+                        row[idx_i]  = 0;
+                        result = true;
+                        continue :i_loop;
+                    } else if (row[idx_j] != 0) {
+                        break;
+                    }
+                }
+
+                const idx_i = @intCast(usize, i);
+                const idx_j = @intCast(usize, j - 1);
+                if (row[idx_j] == 0) {
+                    row[idx_j] = row[idx_i];
+                    row[idx_i] = 0;
+
+                    result = true;
+                }
+            }
+        }
+
+        return result;
     }
 
     pub fn moveUp() bool {
@@ -160,7 +191,24 @@ test "Board.moveLeft()" {
 }
 
 test "Board.moveRight()" {
-
+    var test_board = BoardState{
+        .data = .{
+            .{ 1, 1, 0, 0 },
+            .{ 0, 0, 1, 1 },
+            .{ 0, 1, 0, 1 },
+            .{ 1, 1, 1, 0 }
+        }
+    };
+    const test_board_moved = BoardState{
+        .data = .{
+            .{ 0, 0, 0, 2 },
+            .{ 0, 0, 0, 2 },
+            .{ 0, 0, 0, 2 },
+            .{ 0, 0, 1, 2 }
+        }
+    };
+    try testing.expect(test_board.moveRight());
+    try testing.expectEqual(test_board.data, test_board_moved.data);
 }
 
 test "Board.moveUp()" {
