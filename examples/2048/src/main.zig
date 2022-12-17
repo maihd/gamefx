@@ -74,6 +74,11 @@ pub fn main() !void {
     }
 }
 
+//
+
+const std = @import("std");
+const testing = std.testing;
+
 const BoardState = struct {
     data: [rows][cols]u32,
 
@@ -82,8 +87,35 @@ const BoardState = struct {
     const cols = 4;
     const rows = 4;
 
-    pub fn moveLeft() bool {
-        return false;
+    pub fn moveLeft(self: Self) bool {
+        var result = false;
+
+        for (self.data) |row| {
+            while (i < cols) : (i += 1) {
+                var j = i - 1;
+                while (j >= 0) : (j -= 1) {
+                    if (row[i] == row[j]) {
+                        row[j] *= 2;
+                        row[i]  = 0;
+                        i = j;
+
+                        result = true;
+                        break;
+                    } else if (row[j] != 0) {
+                        break;
+                    }
+                }
+
+                if (row[j + 1] == 0) {
+                    row[j + 1] = row[i];
+                    row[i] = 0;
+
+                    result = true;
+                }
+            }
+        }
+
+        return result;
     }
 
     pub fn moveRight() bool {
@@ -103,7 +135,24 @@ const BoardState = struct {
     }
 };
 test "Board.moveLeft()" {
-
+    const test_board = Board{
+        .data = [_][_]u32 {
+            1, 1, 0, 0,
+            0, 0, 1, 1,
+            0, 1, 0, 1,
+            1, 1, 1, 0
+        }
+    };
+    const test_board_moved = Board{
+        .data = [_][_]u32 {
+            2, 0, 0, 0,
+            2, 0, 0, 0,
+            2, 0, 0, 0,
+            2, 1, 0, 0
+        }
+    };
+    try testing.expect(test_board.moveLeft());
+    try testing.expectEqual(test_board.data, test_board_moved.data);
 }
 
 test "Board.moveRight()" {
