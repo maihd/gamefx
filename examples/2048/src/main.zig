@@ -87,28 +87,32 @@ const BoardState = struct {
     const cols = 4;
     const rows = 4;
 
-    pub fn moveLeft(self: Self) bool {
+    pub fn moveLeft(self: *Self) bool {
         var result = false;
 
-        for (self.data) |row| {
-            while (i < cols) : (i += 1) {
-                var j = i - 1;
+        for (self.data) |*row| {
+            var i: i32 = 1;
+            i_loop: while (i < cols) : (i += 1) {
+                var j: i32 = i - 1;
                 while (j >= 0) : (j -= 1) {
-                    if (row[i] == row[j]) {
-                        row[j] *= 2;
-                        row[i]  = 0;
-                        i = j;
+                    const idx_i = @intCast(usize, i);
+                    const idx_j = @intCast(usize, j);
 
+                    if (row[idx_i] == row[idx_j]) {
+                        row[idx_j] *= 2;
+                        row[idx_i]  = 0;
                         result = true;
-                        break;
-                    } else if (row[j] != 0) {
+                        continue :i_loop;
+                    } else if (row[idx_j] != 0) {
                         break;
                     }
                 }
 
-                if (row[j + 1] == 0) {
-                    row[j + 1] = row[i];
-                    row[i] = 0;
+                const idx_i = @intCast(usize, i);
+                const idx_j = @intCast(usize, j + 1);
+                if (row[idx_j] == 0) {
+                    row[idx_j] = row[idx_i];
+                    row[idx_i] = 0;
 
                     result = true;
                 }
@@ -135,20 +139,20 @@ const BoardState = struct {
     }
 };
 test "Board.moveLeft()" {
-    const test_board = Board{
-        .data = [_][_]u32 {
-            1, 1, 0, 0,
-            0, 0, 1, 1,
-            0, 1, 0, 1,
-            1, 1, 1, 0
+    var test_board = BoardState{
+        .data = .{
+            .{ 1, 1, 0, 0 },
+            .{ 0, 0, 1, 1 },
+            .{ 0, 1, 0, 1 },
+            .{ 1, 1, 1, 0 }
         }
     };
-    const test_board_moved = Board{
-        .data = [_][_]u32 {
-            2, 0, 0, 0,
-            2, 0, 0, 0,
-            2, 0, 0, 0,
-            2, 1, 0, 0
+    const test_board_moved = BoardState{
+        .data = .{
+            .{ 2, 0, 0, 0 },
+            .{ 2, 0, 0, 0 },
+            .{ 2, 0, 0, 0 },
+            .{ 2, 1, 0, 0 }
         }
     };
     try testing.expect(test_board.moveLeft());
