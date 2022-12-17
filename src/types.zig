@@ -7,10 +7,14 @@ pub const Vec           = zmath.Vec;
 pub const Mat           = zmath.Mat;
 pub const Quat          = zmath.Quat;
 
+pub const Vec2          = Vec;  // For specify components needed
+pub const Vec3          = Vec;  // For specify components needed
+pub const Vec4          = Vec;  // For specify components needed
+
 // Shapes & geometry
 
 pub const Rect          = Vec;
-pub const BoundingBox   = raylib.BoundingBox;
+//pub const BoundingBox   = raylib.BoundingBox;
 
 // Graphics types
 
@@ -24,11 +28,11 @@ pub const Image         = raylib.Image;
 pub const Texture       = raylib.Texture;
 pub const NPatchInfo    = raylib.NPatchInfo;
 
-pub const Mesh          = raylib.Mesh;
+//pub const Mesh          = raylib.Mesh;
 //pub const Model         = raylib.Model;
 //pub const ModelAnimation = raylib.ModelAnimation;
 
-pub const Camera        = raylib.Camera;
+//pub const Camera        = raylib.Camera;
 pub const Camera2D      = raylib.Camera2D;
 
 pub const Shader        = raylib.Shader;
