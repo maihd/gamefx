@@ -1,5 +1,5 @@
 const std = @import("std");
-const zmath = @import("libs/zig-gamedev/libs/zmath/build.zig");
+const zmath = @import("libs/zig-gamedev/zmath/build.zig");
 
 pub const pkg = std.build.Pkg{
     .name = "gamefx",
@@ -48,8 +48,8 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
     // Main backend: raylib
 
     step.linkLibC();
-    step.addIncludePath(thisDir() ++ "/libs/raylib/src");
-    step.addIncludePath(thisDir() ++ "/libs/raygui/src");
+    step.addIncludePath(thisDir() ++ "/libs/raylib-4.2.0/src");
+    step.addIncludePath(thisDir() ++ "/libs/raygui-3.2/src");
 
     linkSystemDeps(step);
 
@@ -61,7 +61,7 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
 }
 
 pub fn stepRaylib(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
-    const src_dir = thisDir() ++ "/libs/raylib/src";
+    const src_dir = thisDir() ++ "/libs/raylib-4.2.0/src";
     
     const step = b.addStaticLibrary("raylib", src_dir ++ "/raylib.h");
     step.setBuildMode(mode);
@@ -126,8 +126,8 @@ pub fn link(exe: *std.build.LibExeObjStep) void {
     exe.linkLibC();
     exe.linkLibrary(stepRaylib(exe.builder, exe.target, exe.build_mode));
     exe.linkLibrary(stepGameFX(exe.builder, exe.target, exe.build_mode));
-    exe.addIncludePath(thisDir() ++ "/libs/raylib/src");
-    exe.addIncludePath(thisDir() ++ "/libs/raygui/src");
+    exe.addIncludePath(thisDir() ++ "/libs/raylib-4.2.0/src");
+    exe.addIncludePath(thisDir() ++ "/libs/raygui-3.2/src");
 
     exe.addPackage(zmath.pkg);
     exe.addPackage(pkg);
