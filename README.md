@@ -13,6 +13,7 @@ Features
 - Assets: load from file system, caching, load from package (wip).
 - Math: zig's @Vector for fast computing, easy programming, use zig-gamedev's zmath as backend.
 - GUI: raygui for in-game immediate-mode gui, zgui (wip) for editor.
+- Tilemap: tile texture drawing, tilemesh drawing, loading ldtk and present with native tilemap data structures (planning).
 
 Acknownledge
 ------------
