@@ -1,4 +1,5 @@
 pub enum(u32) {
+    none,                       // 
     uncompressed_grayscale = 1, // 8    bit per pixel (no alpha)
     uncompressed_gray_alpha,    // 8*2  bit per pixel (2 channels)
     uncompressed_r5g6b5,        // 16   bit per pixel
@@ -19,5 +20,5 @@ pub enum(u32) {
     compressed_pvrt_rgb,        // 4    bit per pixel
     compressed_pvrt_rgba,       // 4    bit per pixel
     compressed_astc_4x4_rgba,   // 8    bit per pixel
-    compressed_astc_8x8_rgba    // 2    bit per pixel
+    compressed_astc_8x8_rgba,   // 2    bit per pixel
 };
