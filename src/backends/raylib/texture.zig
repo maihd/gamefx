@@ -38,13 +38,15 @@ wrap: Wrap      = .repeat,
 pub fn init(args: anytype) !Texture {
     const T = @TypeOf(args);
     const backend_texture = switch (T) {
-        []const u8 => raylib.LoadTexture(@ptrCast([*c]const u8, args)),
+        []const u8      => raylib.LoadTexture(@ptrCast([*c]const u8, args)),
+        [*c]const u8    => raylib.LoadTexture(args),
 
-        [*c]const u8 => raylib.LoadTexture(args),
+        Image           => raylib.LoadTextureFromImage(args.asBackendType()),
+        *Image          => raylib.LoadTextureFromImage(args.asBackendType()),
+        *const Image    => raylib.LoadTextureFromImage(args.asBackendType()),
 
-        Image => raylib.LoadTextureFromImage(args.asBackendType()),
-
-        raylib.Image => raylib.LoadTextureFromImage(args),
+        raylib.Image    => raylib.LoadTextureFromImage(args),
+        raylib.Texture  => args,
 
         else => {
             @compileError("init is not implement for " ++ @typeName(T));
@@ -128,6 +130,9 @@ pub fn fromBackendType(backend_texture: raylib.Texture) Texture {
 }
 
 pub fn asBackendType(texture: *const Texture) raylib.Texture {
+    @setRuntimeSafety(false);
+    defer @setRuntimeSafety(true);
+
     return .{
         .id             = @intCast(c_uint, texture.id),
         .width          = @intCast(c_int, texture.width),

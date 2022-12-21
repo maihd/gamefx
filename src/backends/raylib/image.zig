@@ -15,8 +15,14 @@ pixel_format: PixelFormat,
 
 // Methods
 
-pub fn init(path: []const u8) !Image {
-    const backend_image = raylib.LoadImage(@ptrCast([*c]const u8, path));
+pub fn init(args: anytype) !Image {
+    const T = @TypeOf(args);
+    const backend_image = switch (T) {
+        []const u8      => raylib.LoadImage(@ptrCast([*c]const u8, args)),
+        [*c]const u8    => raylib.LoadImage(args),
+        raylib.Image    => args,
+    };
+    
     if (backend_image.data == null) {
         return error.CreateFailed;
     }
@@ -63,6 +69,9 @@ pub fn fromBackendType(backend_image: raylib.Image) Image {
 }
 
 pub fn asBackendType(image: *const Image) raylib.Image {
+    @setRuntimeSafety(false);
+    defer @setRuntimeSafety(true);
+    
     return .{
         .id             = @intCast(i32, image.id),
         .width          = @intCast(i32, image.width),

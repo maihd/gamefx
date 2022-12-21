@@ -24,12 +24,8 @@ pub const Color32       = [4]u8;
 pub const Font          = raylib.Font;
 pub const GlyphInfo     = raylib.GlyphInfo;
 
-pub const Image         = raylib.Image;
-
+pub const Image         = @import("backends/raylib/image.zig");
 pub const Texture       = @import("backends/raylib/texture.zig");
-pub const TextureWrap   = Texture.Wrap;
-pub const TextureFilter = Texture.Filter;
-
 pub const PixelFormat   = @import("backends/raylib/pixel_format.zig").PixelFormat;
 
 pub const NPatchInfo    = raylib.NPatchInfo;

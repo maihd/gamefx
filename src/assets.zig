@@ -21,6 +21,8 @@ var assets_allocator: std.mem.Allocator         = undefined;
 var search_paths: std.ArrayList([]u8)           = undefined;
 
 var wave_cache: std.StringHashMap(Wave)         = undefined;
+
+var image_cache: std.StringHashMap(Image)       = undefined;
 var texture_cache: std.StringHashMap(Texture)   = undefined;
 
 pub fn init(allocator: std.mem.Allocator) !void {
@@ -179,26 +181,52 @@ pub fn unloadMusic(music: Music) void {
 
 // Manage shader
 
-// Manage texture
+// Manage image & texture
 
-pub fn loadImage(path: []const u8) !Image {
-    if (getData(assets_allocator, path)) |data| {
-        defer assets_allocator.free(data);
-
-        const extension = @ptrCast([*c]const u8, std.fs.path.extension(path));
-        const image = raylib.LoadImageFromMemory(extension, data.ptr, @intCast(c_int, data.len));
-        if (image.data == null) {
-            return error.DecodeFailed;
-        } else {
+pub fn findImage(path: []const u8) ?*Image {
+    if (getExistsFilePath(path)) |file_path| {
+        if (image_cache.getPtr(file_path)) |image| {
             return image;
         }
+    }
+
+    return null;
+}
+
+pub fn loadImage(path: []const u8) !*Image {
+    if (getExistsFilePath(path)) |file_path| {
+        if (image_cache.getPtr(file_path)) |image| {
+            return image;
+        }
+
+        const image = try Image.init(file_path);
+        try image_cache.put(file_path, image);
+
+        return image_cache.getPtr(file_path) orelse unreachable;
     } else {
         return error.AssetsNotFound;
     }
 }
 
-pub fn unloadImage(image: Image) void {
-    raylib.UnloadImage(image);
+pub fn unloadImage(image: *Image) void {
+    var iterator = image_cache.iterator();
+    while (iterator.next()) |entry| {
+        if (entry.value_ptr == image) {
+            image_cache.removeByPtr(entry.key_ptr);
+            entry.value_ptr.deinit();
+            break;
+        }
+    }
+}
+
+pub fn findTexture(path: []const u8) ?*Texture {
+    if (getExistsFilePath(path)) |file_path| {
+        if (texture_cache.getPtr(file_path)) |texture| {
+            return texture;
+        }
+    }
+
+    return null;
 }
 
 pub fn loadTexture(path: []const u8) !*Texture {
@@ -219,7 +247,7 @@ pub fn loadTexture(path: []const u8) !*Texture {
 pub fn unloadTexture(texture: *Texture) void {
     var iterator = texture_cache.iterator();
     while (iterator.next()) |entry| {
-        if (entry.value_ptr.id == texture.id) {
+        if (entry.value_ptr == texture) {
             texture_cache.removeByPtr(entry.key_ptr);
             entry.value_ptr.deinit();
             break;
