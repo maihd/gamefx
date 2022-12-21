@@ -22,26 +22,26 @@ pub const Color         = Vec;
 pub const Color32       = [4]u8;
 
 pub const Font          = raylib.Font;
-pub const GlyphInfo     = raylib.GlyphInfo;
+//pub const GlyphInfo     = raylib.GlyphInfo;
 
 pub const Image         = @import("backends/raylib/image.zig");
 pub const Texture       = @import("backends/raylib/texture.zig");
 pub const PixelFormat   = @import("backends/raylib/pixel_format.zig").PixelFormat;
 
-pub const NPatchInfo    = raylib.NPatchInfo;
+//pub const NPatchInfo    = raylib.NPatchInfo;
 
 //pub const Mesh          = raylib.Mesh;
 //pub const Model         = raylib.Model;
 //pub const ModelAnimation = raylib.ModelAnimation;
 
 //pub const Camera        = raylib.Camera;
-pub const Camera2D      = raylib.Camera2D;
+//pub const Camera2D      = raylib.Camera2D;
 
-pub const Shader        = raylib.Shader;
-pub const Material      = raylib.Material;
-pub const MaterialMap   = raylib.MaterialMap;
+//pub const Shader        = raylib.Shader;
+//pub const Material      = raylib.Material;
+//pub const MaterialMap   = raylib.MaterialMap;
 
-pub const RenderTexture = raylib.RenderTexture;
+//pub const RenderTexture = raylib.RenderTexture;
 
 // Audio types
 
