@@ -104,17 +104,17 @@ pub fn drawBackground(texture: Texture, tint: Color32) void {
 
 // Graphics state
 
-pub fn getScreenSize() Vec {
+pub fn setScreenSize(size: [2]f32) void {
+    raylib.SetWindowSize(
+        @floatToInt(c_int, size[0]),
+        @floatToInt(c_int, size[1])
+    );
+}
+
+pub fn getScreenSize() [2]f32 {
     return .{
         @intToFloat(f32, raylib.GetScreenWidth()),
         @intToFloat(f32, raylib.GetScreenHeight()),
-    };
-}
-
-pub fn getRenderSize() Vec {
-    return .{
-        @intToFloat(f32, raylib.GetRenderWidth()),
-        @intToFloat(f32, raylib.GetRenderHeight()),
     };
 }
 

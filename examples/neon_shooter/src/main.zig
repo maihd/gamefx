@@ -31,19 +31,19 @@ pub fn main() !void {
     while (!gamefx.isClosing()) {
         // Moving player
         var player_velocity = gamefx.math.vec2(0, 0);
-        if (gamefx.input.isKeyDown(.up)) {
+        if (gamefx.input.isKeyDown(.up) or gamefx.input.isKeyDown(.w)) {
             player_velocity[1] -= 10;
         }
         
-        if (gamefx.input.isKeyDown(.down)) {
+        if (gamefx.input.isKeyDown(.down) or gamefx.input.isKeyDown(.s)) {
             player_velocity[1] += 10;
         }
         
-        if (gamefx.input.isKeyDown(.left)) {
+        if (gamefx.input.isKeyDown(.left) or gamefx.input.isKeyDown(.a)) {
             player_velocity[0] -= 10;
         } 
         
-        if (gamefx.input.isKeyDown(.right)) {
+        if (gamefx.input.isKeyDown(.right) or gamefx.input.isKeyDown(.d)) {
             player_velocity[0] += 10;
         }
 
