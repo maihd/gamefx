@@ -30,6 +30,9 @@ height: u32,
 mipmaps: u32,
 pixel_format: PixelFormat,
 
+filter: Filter  = .point,
+wrap: Wrap      = .repeat,
+
 // Methods
 
 pub fn init(args: anytype) !Texture {
@@ -52,7 +55,13 @@ pub fn init(args: anytype) !Texture {
         return error.CreateFailed;
     }
 
-    return fromBackendType(backend_texture);
+    var texture = fromBackendType(backend_texture);
+
+    // Ensure default properties
+    texture.setFilter(texture.filter);
+    texture.setWrap(texture.wrap);
+
+    return texture;
 }
 
 //pub fn init(pixels: []const u8, width: i32, height: i32, mimmaps: i32, pixel_format: PixelFormat) !Texture {
@@ -77,7 +86,7 @@ pub fn deinit(texture: *Texture) void {
         .width          = 0,
         .height         = 0,
         .mipmaps        = 0,
-        .pixel_format   = .none
+        .pixel_format   = .none,
     };
 }
 
@@ -97,11 +106,13 @@ pub fn genMipmaps(texture: *Texture) void {
 }
 
 pub fn setFilter(texture: *Texture, filter: Filter) void {
-    raylib.SetTextureFilter(texture.asBackendType(), @enumToInt(filter));
+    raylib.SetTextureFilter(texture.asBackendType(), @intCast(c_int, @enumToInt(filter)));
+    texture.*.filter = filter;
 }
 
 pub fn setWrap(texture: *Texture, wrap: Wrap) void {
-    raylib.SetTextureWrap(texture.asBackendType(), @enumToInt(wrap));
+    raylib.SetTextureWrap(texture.asBackendType(), @intCast(c_int, @enumToInt(wrap)));
+    texture.*.wrap = wrap;
 }
 
 // Helper to work with backend

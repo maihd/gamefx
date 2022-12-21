@@ -25,7 +25,13 @@ pub const Font          = raylib.Font;
 pub const GlyphInfo     = raylib.GlyphInfo;
 
 pub const Image         = raylib.Image;
+
 pub const Texture       = @import("backends/raylib/texture.zig");
+pub const TextureWrap   = Texture.Wrap;
+pub const TextureFilter = Texture.Filter;
+
+pub const PixelFormat   = @import("backends/raylib/pixel_format.zig").PixelFormat;
+
 pub const NPatchInfo    = raylib.NPatchInfo;
 
 //pub const Mesh          = raylib.Mesh;

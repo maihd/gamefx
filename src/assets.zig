@@ -201,21 +201,22 @@ pub fn unloadImage(image: Image) void {
     raylib.UnloadImage(image);
 }
 
-pub fn loadTexture(path: []const u8) !Texture {
+pub fn loadTexture(path: []const u8) !*Texture {
     if (getExistsFilePath(path)) |file_path| {
-        if (texture_cache.get(file_path)) |texture| {
+        if (texture_cache.getPtr(file_path)) |texture| {
             return texture;
         }
 
         const texture = try Texture.init(file_path);
         try texture_cache.put(file_path, texture);
-        return texture;
+
+        return texture_cache.getPtr(file_path) orelse unreachable;
     } else {
         return error.AssetsNotFound;
     }
 }
 
-pub fn unloadTexture(texture: Texture) void {
+pub fn unloadTexture(texture: *Texture) void {
     var iterator = texture_cache.iterator();
     while (iterator.next()) |entry| {
         if (entry.value_ptr.id == texture.id) {
