@@ -3,7 +3,7 @@ pub const raylib = @import("../raylib.zig");
 // Types
 
 pub const Image = @This();
-pub const PixelFormat = @import("pixel_format.zig");
+pub const PixelFormat = @import("pixel_format.zig").PixelFormat;
 
 // Fields
 
@@ -15,7 +15,7 @@ pixel_format: PixelFormat,
 
 // Methods
 
-pub fn init(path: []const u8) !Texture {
+pub fn init(path: []const u8) !Image {
     const backend_image = raylib.LoadImage(@ptrCast([*c]const u8, path));
     if (backend_image.data == null) {
         return error.CreateFailed;

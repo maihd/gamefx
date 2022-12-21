@@ -1,4 +1,4 @@
-pub enum(u32) {
+pub const PixelFormat = enum(u32) {
     none,                       // 
     uncompressed_grayscale = 1, // 8    bit per pixel (no alpha)
     uncompressed_gray_alpha,    // 8*2  bit per pixel (2 channels)

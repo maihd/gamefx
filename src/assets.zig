@@ -207,11 +207,7 @@ pub fn loadTexture(path: []const u8) !Texture {
             return texture;
         }
 
-        const texture = raylib.LoadTexture(@ptrCast([*c]const u8, file_path));
-        if (texture.id == 0) {
-            return error.CreateFailed;
-        }
-
+        const texture = try Texture.init(file_path);
         try texture_cache.put(file_path, texture);
         return texture;
     } else {
@@ -224,9 +220,8 @@ pub fn unloadTexture(texture: Texture) void {
     while (iterator.next()) |entry| {
         if (entry.value_ptr.id == texture.id) {
             texture_cache.removeByPtr(entry.key_ptr);
+            entry.value_ptr.deinit();
             break;
         }
     }
-
-    raylib.UnloadTexture(texture);
 }

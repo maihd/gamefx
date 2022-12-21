@@ -185,7 +185,7 @@ pub fn drawTexture(cmd: DrawTextureCmd) void {
     const draw_height = tile_height * cmd.scale[1];
     
     raylib.DrawTexturePro(
-        cmd.texture,                            // texture: raylib.Texture
+        cmd.texture.asBackendType(),            // texture: raylib.Texture
         .{                                      // source: raylib.Rectangle
             .x      = cmd.rect[0] * texture_width,
             .y      = cmd.rect[1] * texture_height,

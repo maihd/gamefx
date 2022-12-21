@@ -2,8 +2,25 @@ pub const raylib = @import("../raylib.zig");
 
 // Types
 
-pub const Texture = @This();
-pub const PixelFormat = @import("pixel_format.zig");
+const Image = @import("image.zig");
+const Texture = @This();
+const PixelFormat = @import("pixel_format.zig").PixelFormat;
+
+pub const Filter = enum(u32) {
+    point = 0,                  // No filter, just pixel approximation
+    bilinear,                   // Linear filtering
+    trilinear,                  // Trilinear filtering (linear with mipmaps)
+    anisotropic_4x,             // Anisotropic filtering 4x
+    anisotropic_8x,             // Anisotropic filtering 8x
+    anisotropic_16x,            // Anisotropic filtering 16x
+};
+
+pub const Wrap = enum(u32) {
+    repeat = 0,                 // Repeats texture in tiled mode
+    clamp,                      // Clamps texture to edge pixel in tiled mode
+    mirror_repeat,              // Mirrors and repeats the texture in tiled mode
+    mirror_clamp 
+};
 
 // Fields
 
@@ -15,8 +32,22 @@ pixel_format: PixelFormat,
 
 // Methods
 
-pub fn init(path: []const u8) !Texture {
-    const backend_texture = raylib.LoadTexture(@ptrCast([*c]const u8, path));
+pub fn init(args: anytype) !Texture {
+    const T = @TypeOf(args);
+    const backend_texture = switch (T) {
+        []const u8 => raylib.LoadTexture(@ptrCast([*c]const u8, args)),
+
+        [*c]const u8 => raylib.LoadTexture(args),
+
+        Image => raylib.LoadTextureFromImage(args.asBackendType()),
+
+        raylib.Image => raylib.LoadTextureFromImage(args),
+
+        else => {
+            @compileError("init is not implement for " ++ @typeName(T));
+        }
+    };
+
     if (backend_texture.id == 0) {
         return error.CreateFailed;
     }
@@ -38,16 +69,39 @@ pub fn init(path: []const u8) !Texture {
 //    return error.CreateFailed;
 //}
 
-pub fn deinit(self: *Self) void {
-    raylib.UnloadTexture();
+pub fn deinit(texture: *Texture) void {
+    raylib.UnloadTexture(texture.asBackendType());
 
-    self.* = .{
+    texture.* = .{
         .id             = 0,
         .width          = 0,
         .height         = 0,
         .mipmaps        = 0,
         .pixel_format   = .none
     };
+}
+
+pub fn update(texture: *Texture, pixels: []const u8) void {
+    raylib.UpdateTexture(texture.asBackendType(), @ptrCast(*const anyopaque, pixels));
+}
+
+pub fn updateRect(texture: *Texture, pixels: []const u8, rect: @Vector(4, f32)) void {
+    raylib.UpdateTexture(texture.asBackendType(), raylib.toRectangle(rect), @ptrCast(*const anyopaque, pixels));
+}
+
+pub fn genMipmaps(texture: *Texture) void {
+    var backend_texture = texture.asBackendType();
+    raylib.GenTextureMipmaps(&backend_texture);
+
+    texture.mipmaps = @intCast(u32, backend_texture.mipmaps);
+}
+
+pub fn setFilter(texture: *Texture, filter: Filter) void {
+    raylib.SetTextureFilter(texture.asBackendType(), @enumToInt(filter));
+}
+
+pub fn setWrap(texture: *Texture, wrap: Wrap) void {
+    raylib.SetTextureWrap(texture.asBackendType(), @enumToInt(wrap));
 }
 
 // Helper to work with backend
@@ -62,12 +116,12 @@ pub fn fromBackendType(backend_texture: raylib.Texture) Texture {
     };
 }
 
-pub fn asBackendType(self: *const Self) raylib.Texture {
+pub fn asBackendType(texture: *const Texture) raylib.Texture {
     return .{
-        .id             = @intCast(i32, self.id),
-        .width          = @intCast(i32, self.width),
-        .height         = @intCast(i32, self.height),
-        .mipmaps        = @intCast(i32, self.mipmaps),
-        .pixel_format   = @intToEnum(PixelFormat, self.pixel_format)
+        .id             = @intCast(c_uint, texture.id),
+        .width          = @intCast(c_int, texture.width),
+        .height         = @intCast(c_int, texture.height),
+        .mipmaps        = @intCast(c_int, texture.mipmaps),
+        .format         = @intCast(c_int, @enumToInt(texture.pixel_format))
     };
 }
