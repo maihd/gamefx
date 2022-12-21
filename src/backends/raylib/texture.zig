@@ -49,7 +49,7 @@ pub fn init(args: anytype) !Texture {
         raylib.Texture  => args,
 
         else => {
-            @compileError("init is not implement for " ++ @typeName(T));
+            @compileError("Texture.init() is not implement for " ++ @typeName(T));
         }
     };
 
@@ -65,20 +65,6 @@ pub fn init(args: anytype) !Texture {
 
     return texture;
 }
-
-//pub fn init(pixels: []const u8, width: i32, height: i32, mimmaps: i32, pixel_format: PixelFormat) !Texture {
-//    if (pixels.len > 0) {
-//        return .{ 
-//            .id             = 0,
-//            .width          = width,
-//            .height         = height,
-//            .mipmaps        = mipmaps,
-//            .pixel_format   = pixel_format
-//        };
-//    }
-//
-//    return error.CreateFailed;
-//}
 
 pub fn deinit(texture: *Texture) void {
     raylib.UnloadTexture(texture.asBackendType());
@@ -119,7 +105,7 @@ pub fn setWrap(texture: *Texture, wrap: Wrap) void {
 
 // Helper to work with backend
 
-pub fn fromBackendType(backend_texture: raylib.Texture) Texture {
+pub inline fn fromBackendType(backend_texture: raylib.Texture) Texture {
     return .{ 
         .id             = @intCast(u32, backend_texture.id),
         .width          = @intCast(u32, backend_texture.width),
@@ -129,7 +115,7 @@ pub fn fromBackendType(backend_texture: raylib.Texture) Texture {
     };
 }
 
-pub fn asBackendType(texture: *const Texture) raylib.Texture {
+pub inline fn asBackendType(texture: *const Texture) raylib.Texture {
     @setRuntimeSafety(false);
     defer @setRuntimeSafety(true);
 

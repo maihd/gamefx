@@ -45,10 +45,15 @@ pub const RenderTexture = raylib.RenderTexture;
 
 // Audio types
 
-pub const Wave          = raylib.Wave;
-pub const Music         = raylib.Music;
-pub const Sound         = raylib.Sound;
-pub const AudioStream   = raylib.AudioStream;
+// pub const Wave          = @import("backends/raylib/wave.zig");
+// pub const Music         = @import("backends/raylib/music.zig");
+// pub const Sound         = @import("backends/raylib/sound.zig");
+// pub const AudioStream   = @import("backends/raylib/audio_stream.zig");
+
+pub const Wave              = raylib.Wave;
+pub const Music             = raylib.Music;
+pub const Sound             = raylib.Sound;
+pub const AudioStream       = raylib.AudioStream;
 
 // Input types
 

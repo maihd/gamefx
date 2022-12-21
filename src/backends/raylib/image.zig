@@ -2,8 +2,8 @@ pub const raylib = @import("../raylib.zig");
 
 // Types
 
-pub const Image = @This();
-pub const PixelFormat = @import("pixel_format.zig").PixelFormat;
+const Image = @This();
+const PixelFormat = @import("pixel_format.zig").PixelFormat;
 
 // Fields
 
@@ -21,28 +21,18 @@ pub fn init(args: anytype) !Image {
         []const u8      => raylib.LoadImage(@ptrCast([*c]const u8, args)),
         [*c]const u8    => raylib.LoadImage(args),
         raylib.Image    => args,
+
+        else => {
+            @compileError("Image.init() is not implement for " ++ @typeName(T));
+        }
     };
     
     if (backend_image.data == null) {
-        return error.CreateFailed;
+        return error.InitFailed;
     }
 
     return fromBackendType(backend_image);
 }
-
-//pub fn init(pixels: []const u8, width: i32, height: i32, mimmaps: i32, pixel_format: PixelFormat) !Texture {
-//    if (pixels.len > 0) {
-//        return .{ 
-//            .id             = 0,
-//            .width          = width,
-//            .height         = height,
-//            .mipmaps        = mipmaps,
-//            .pixel_format   = pixel_format
-//        };
-//    }
-//
-//    return error.CreateFailed;
-//}
 
 pub fn deinit(image: *Image) void {
     raylib.UnloadImage(image.asBackendType());
@@ -58,7 +48,7 @@ pub fn deinit(image: *Image) void {
 
 // Helper to work with backend
 
-pub fn fromBackendType(backend_image: raylib.Image) Image {
+pub inline fn fromBackendType(backend_image: raylib.Image) Image {
     return .{ 
         .data           = backend_image.data,
         .width          = @intCast(u32, backend_image.width),
@@ -68,15 +58,15 @@ pub fn fromBackendType(backend_image: raylib.Image) Image {
     };
 }
 
-pub fn asBackendType(image: *const Image) raylib.Image {
+pub inline fn asBackendType(image: *const Image) raylib.Image {
     @setRuntimeSafety(false);
     defer @setRuntimeSafety(true);
     
     return .{
-        .id             = @intCast(i32, image.id),
-        .width          = @intCast(i32, image.width),
-        .height         = @intCast(i32, image.height),
-        .mipmaps        = @intCast(i32, image.mipmaps),
-        .pixel_format   = @intToEnum(PixelFormat, image.pixel_format)
+        .data           = image.data,
+        .width          = @intCast(c_int, image.width),
+        .height         = @intCast(c_int, image.height),
+        .mipmaps        = @intCast(c_int, image.mipmaps),
+        .format         = @intCast(c_int, @enumToInt(image.pixel_format))
     };
 }
