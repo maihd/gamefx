@@ -165,8 +165,14 @@ pub fn getTotalTime() f64 {
     return raylib.GetTime();
 }
 
+// Allocator
+
 pub fn getFrameAllocator() std.mem.Allocator {
     return frame_allocator.allocator();
+}
+
+pub fn getAssetsAllocator() std.mem.Allocator {
+    return assets_allocator;   
 }
 
 // For backends

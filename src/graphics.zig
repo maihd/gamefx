@@ -48,7 +48,7 @@ pub const DrawTextCmd = struct {
 };
 
 pub const DrawTextureCmd = struct {
-    texture: *Texture,
+    texture: *const Texture,
     position: Vec,
 
     rect: Vec               = .{ 0.0, 0.0, 1.0, 1.0 },
