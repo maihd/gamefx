@@ -31,6 +31,7 @@ pub fn build(b: *std.Build) void {
         // @import("examples/input_keys/build.zig"),
         // @import("examples/gui_demo/build.zig"),
         // @import("examples/sprites/build.zig"),
+        @import("examples/scenegraph/build.zig"),
         @import("examples/gomoku/build.zig"),
         // @import("examples/2048/build.zig"),
     };
