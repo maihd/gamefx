@@ -1,5 +1,4 @@
 const std = @import("std");
-const log = @import("log.zig");
 const assets = @import("assets.zig");
 const raylib = @import("backends/raylib.zig");
 
@@ -118,7 +117,7 @@ pub fn deinit() void {
     // Cleanup assets memory use default assets allocator
     if (std.meta.eql(assets_allocator, default_assets_allocator)) {
         const assets_leaked = default_assets_allocator_heap.deinit();
-        if (assets_leaked) {
+        if (assets_leaked == .leak) {
             @panic("Assets Leaked!");
         }
     }
@@ -136,7 +135,7 @@ pub fn deinit() void {
 
         if (std.meta.eql(allocator, default_backend_allocator)) {
             const backend_leaked = default_backend_allocator_heap.deinit();
-            if (backend_leaked) {
+            if (backend_leaked == .leak) {
                 @panic("Backends Leaked!");
             }
         }

@@ -1,6 +1,6 @@
 // Meta
 
-pub const version   = @import("std").SemanticVersion{ .major = 0, .minor = 1, .patch = 0 };
+pub const version   = @import("std").SemanticVersion{ .major = 0, .minor = 1, .patch = 1 };
 
 // Modules
 
@@ -11,6 +11,7 @@ pub const constants = @import("constants.zig");
 pub const gui       = @import("gui.zig");
 pub const math      = @import("math.zig");
 pub const text      = @import("text.zig");
+pub const trace     = @import("trace.zig");
 pub const input     = @import("input.zig");
 pub const audio     = @import("audio.zig");
 pub const assets    = @import("assets.zig");

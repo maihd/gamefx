@@ -2,12 +2,14 @@
 const raylib = @import("backends/raylib.zig");
 const system = @import("system.zig");
 const types = @import("types.zig");
-const log = @import("log.zig");
 const constants = @import("constants.zig");
 
 // Types
 
 const Vec       = types.Vec;
+const Vec2      = types.Vec2;
+const Vec4      = types.Vec4;
+
 const Rect      = types.Rect;
 const Font      = types.Font;
 const Color32   = types.Color32;
@@ -16,17 +18,17 @@ const Texture   = types.Texture;
 // Draw commands
 
 pub const DrawRectCmd = struct {
-    position: Vec,
-    size: Vec,
+    position: Vec2,
+    size: Vec2,
     color: Color32,
     
-    scale: Vec              = .{ 1.0, 1.0, 1.0, 1.0 },
-    origin: Vec             = .{ 0.5, 0.5, 0.5, 0.5 },
+    scale: Vec2             = .{ 1.0, 1.0 },
+    origin: Vec2            = .{ 0.5, 0.5 },
     rotation: f32           = 0.0,
 };
 
 pub const DrawCircleCmd = struct {
-    center: Vec, 
+    center: Vec2, 
     radius: f32, 
     color: Color32,
 
@@ -37,23 +39,23 @@ pub const DrawCircleCmd = struct {
 
 pub const DrawTextCmd = struct {
     text: []const u8, 
-    position: Vec, 
+    position: Vec2, 
     font_size: f32, 
     tint: Color32,
     
     font: ?Font             = null,
-    origin: Vec             = .{ 0.5, 0.5, 0.5, 0.5 },
+    origin: Vec2            = .{ 0.5, 0.5 },
     rotation: f32           = 0.0,
     spacing: f32            = 1.0
 };
 
 pub const DrawTextureCmd = struct {
     texture: *const Texture,
-    position: Vec,
+    position: Vec2,
 
-    rect: Vec               = .{ 0.0, 0.0, 1.0, 1.0 },
-    scale: Vec              = .{ 1.0, 1.0, 1.0, 1.0 },
-    origin: Vec             = .{ 0.5, 0.5, 0.5, 0.5 },
+    rect: Rect              = .{ 0.0, 0.0, 1.0, 1.0 },
+    scale: Vec2             = .{ 1.0, 1.0 },
+    origin: Vec2            = .{ 0.5, 0.5 },
     rotation: f32           = 0.0,
     tint: Color32           = constants.color32_white,
 };
@@ -104,14 +106,14 @@ pub fn drawBackground(texture: Texture, tint: Color32) void {
 
 // Graphics state
 
-pub fn setScreenSize(size: [2]f32) void {
+pub fn setScreenSize(size: types.Vec2) void {
     raylib.SetWindowSize(
         @floatToInt(c_int, size[0]),
         @floatToInt(c_int, size[1])
     );
 }
 
-pub fn getScreenSize() [2]f32 {
+pub fn getScreenSize() types.Vec2 {
     return .{
         @intToFloat(f32, raylib.GetScreenWidth()),
         @intToFloat(f32, raylib.GetScreenHeight()),

@@ -10,7 +10,7 @@ const raylib = @cImport({
 
 // Convert functions
 
-pub inline fn toVector2(vec: types.Vec) raylib.Vector2 {
+pub inline fn toVector2(vec: types.Vec2) raylib.Vector2 {
     return .{ .x = vec[0], .y = vec[1] };
 }
 

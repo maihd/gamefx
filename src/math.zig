@@ -8,27 +8,27 @@ pub usingnamespace zmath;
 
 // Contructors
 
-pub inline fn vec2(x: f32, y: f32) types.Vec {
-    return types.Vec{ x, y, 0.0, 1.0 }; // w = 1.0 for calculating position
+pub inline fn vec2(x: f32, y: f32) types.Vec2 {
+    return .{ x, y };
 }
 
-pub inline fn vec3(x: f32, y: f32, z: f32) types.Vec {
-    return types.Vec{ x, y,   z, 1.0 }; // w = 1.0 for calculating position
+pub inline fn vec3(x: f32, y: f32, z: f32) types.Vec3 {
+    return .{ x, y, z, 1.0 }; // w = 1.0 for calculating position
 }
 
-pub inline fn vec4(x: f32, y: f32, z: f32, w: f32) types.Vec {
-    return types.Vec{ x, y,   z,   w };
+pub inline fn vec4(x: f32, y: f32, z: f32, w: f32) types.Vec4 {
+    return .{ x, y, z,   w };
 }
 
-pub inline fn vec2s(s: f32) types.Vec {
+pub inline fn vec2s(s: f32) types.Vec2 {
+    return .{ s, s };
+}
+
+pub inline fn vec3s(s: f32) types.Vec3 {
     return zmath.f32x4s(s);
 }
 
-pub inline fn vec3s(s: f32) types.Vec {
-    return zmath.f32x4s(s);
-}
-
-pub inline fn vec4s(s: f32) types.Vec {
+pub inline fn vec4s(s: f32) types.Vec4 {
     return zmath.f32x4s(s);
 }
 

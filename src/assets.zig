@@ -5,25 +5,25 @@ const raylib = @import("backends/raylib.zig");
 
 // Types
 
-const Font      = types.Font;
+const Font = types.Font;
 
-const Wave      = types.Wave;
-const Sound     = types.Sound;
-const Music     = types.Music;
+const Wave = types.Wave;
+const Sound = types.Sound;
+const Music = types.Music;
 
-const Image     = types.Image;
-const Texture   = types.Texture;
+const Image = types.Image;
+const Texture = types.Texture;
 
 // Manage assets
 
-var assets_allocator: std.mem.Allocator         = undefined;
+var assets_allocator: std.mem.Allocator = undefined;
 
-var search_paths: std.ArrayList([]u8)           = undefined;
+var search_paths: std.ArrayList([]u8) = undefined;
 
-var wave_cache: std.StringHashMap(Wave)         = undefined;
+var wave_cache: std.StringHashMap(Wave) = undefined;
 
-var image_cache: std.StringHashMap(Image)       = undefined;
-var texture_cache: std.StringHashMap(Texture)   = undefined;
+var image_cache: std.StringHashMap(Image) = undefined;
+var texture_cache: std.StringHashMap(Texture) = undefined;
 
 pub fn init(allocator: std.mem.Allocator) !void {
     assets_allocator = allocator;
@@ -44,17 +44,17 @@ pub fn deinit() void {
 pub fn addSearchPath(path: []const u8) !void {
     // Check if search path is a directory
     _ = try std.fs.openDirAbsolute(path, .{});
-    
+
     // Storing
     const storing_path = try assets_allocator.dupe(u8, path);
     try search_paths.append(storing_path);
 }
 
 pub fn removeSearchPath(path: []const u8) void {
-    const found_index =  for (search_paths.items) |search_path, index| {
+    const found_index = for (search_paths.items, 0..) |search_path, index| {
         if (std.mem.eql(u8, search_path, path)) break index;
     } else null;
-    
+
     if (found_index) |index| {
         const storing_path = search_paths.orderedRemove(index);
         assets_allocator.free(storing_path);
@@ -77,7 +77,7 @@ pub fn getExistsFilePath(path: []const u8) ?[]const u8 {
 
             return file_path;
         }
-        
+
         return null;
     };
 
@@ -96,11 +96,11 @@ pub fn getData(allocator: std.mem.Allocator, path: []const u8) ?[]u8 {
             return null;
         };
 
-        const buffer = allocator.alloc(u8, @as(usize, stat.size)) catch { 
+        const buffer = allocator.alloc(u8, @as(usize, stat.size)) catch {
             return null;
         };
-        
-        const read_bytes = file.readAll(buffer) catch { 
+
+        const read_bytes = file.readAll(buffer) catch {
             return null;
         };
 

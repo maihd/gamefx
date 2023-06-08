@@ -1,25 +1,23 @@
 const std = @import("std");
 const zmath = @import("libs/zig-gamedev/zmath/build.zig");
 
-pub const pkg = std.build.Pkg{
-    .name = "gamefx",
-    .source = .{ .path = thisDir() ++ "/src/main.zig" },
-    .dependencies = &[_]std.build.Pkg{
-        zmath.pkg,
-    }, 
-};
-
-pub fn build(b: *std.build.Builder) void {
+pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const mode = .Debug;//b.standardReleaseOptions();
-    const step = stepGameFX(b, target, mode);
-    step.install();
+
+    //const step = stepGameFX(b, target, mode);
+    //step.install();
 
     // Add test step
 
-    const main_tests = b.addTest("src/test.zig");
-    main_tests.setBuildMode(mode);
-    link(main_tests);
+    const main_tests = b.addTest(.{
+        .name = "gamefx-tests",
+        .root_source_file = .{ .path = thisDir() ++ "src/test.zig" },
+        .target = target,
+        .optimize = mode,
+    });
+    //main_tests.setBuildMode(mode);
+    link(b, target, mode, main_tests);
 
     const test_step = b.step("test", "Run library tests");
     test_step.dependOn(&main_tests.step);
@@ -27,23 +25,27 @@ pub fn build(b: *std.build.Builder) void {
     // Example applications
 
     const examples = .{
-        @import("examples/neon_shooter/build.zig"),
-        @import("examples/basic_window/build.zig"),
-        @import("examples/input_mouse/build.zig"),
-        @import("examples/input_keys/build.zig"),
-        @import("examples/gui_demo/build.zig"),
-        @import("examples/sprites/build.zig"),
-        @import("examples/2048/build.zig"),
+        // @import("examples/neon_shooter/build.zig"),
+        // @import("examples/basic_window/build.zig"),
+        // @import("examples/input_mouse/build.zig"),
+        // @import("examples/input_keys/build.zig"),
+        // @import("examples/gui_demo/build.zig"),
+        // @import("examples/sprites/build.zig"),
+        @import("examples/gomoku/build.zig"),
+        // @import("examples/2048/build.zig"),
     };
     inline for (examples) |example| {
         installExample(b, example.build(b, target, mode), example.name);
     }
 }
 
-pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
-    const step = b.addStaticLibrary(pkg.name, pkg.source.path);
-    step.setBuildMode(mode);
-    step.setTarget(target);
+pub fn stepGameFX(b: *std.Build, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
+    const step = b.addStaticLibrary(.{ 
+        .name = "gamefx", 
+        .root_source_file = .{ .path = thisDir() ++ "/src/main.zig" },
+        .target = target,
+        .optimize = mode
+    });
 
     // Main backend: raylib
 
@@ -55,7 +57,8 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
 
     // Sub backends: zmath, zgui, ztracy, zjobs, zpool
 
-    step.addPackage(zmath.pkg);
+    const zmath_package = zmath.package(b, target, mode, .{});
+    step.addModule("zmath", zmath_package.zmath);
 
     return step;
 }
@@ -63,9 +66,12 @@ pub fn stepGameFX(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
 pub fn stepRaylib(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.builtin.Mode) *std.build.LibExeObjStep {
     const src_dir = thisDir() ++ "/libs/raylib-4.2.0/src";
     
-    const step = b.addStaticLibrary("raylib", src_dir ++ "/raylib.h");
-    step.setBuildMode(mode);
-    step.setTarget(target);
+    const step = b.addStaticLibrary(.{
+        .name = "raylib", 
+        .root_source_file = .{ .path = src_dir ++ "/raylib.h" },
+        .target = target,
+        .optimize = mode
+    });
 
     // Compile sources
 
@@ -122,15 +128,23 @@ pub fn stepRaylib(b: *std.build.Builder, target: std.zig.CrossTarget, mode: std.
     return step;
 }
 
-pub fn link(exe: *std.build.LibExeObjStep) void {
+pub fn link(b: *std.Build, target: std.zig.CrossTarget, mode: std.builtin.Mode, exe: *std.build.LibExeObjStep) void {
     exe.linkLibC();
-    exe.linkLibrary(stepRaylib(exe.builder, exe.target, exe.build_mode));
-    exe.linkLibrary(stepGameFX(exe.builder, exe.target, exe.build_mode));
+    exe.linkLibrary(stepRaylib(b, target, mode));
+    exe.linkLibrary(stepGameFX(b, target, mode));
     exe.addIncludePath(thisDir() ++ "/libs/raylib-4.2.0/src");
     exe.addIncludePath(thisDir() ++ "/libs/raygui-3.2/src");
 
-    exe.addPackage(zmath.pkg);
-    exe.addPackage(pkg);
+    const zmath_package = zmath.package(b, target, mode, .{});
+
+    const gamefx_module = b.createModule(.{
+        .source_file = .{ .path = thisDir() ++ "/src/main.zig" },
+        .dependencies = &.{
+            .{ .name = "zmath", .module = zmath_package.zmath },
+        }
+    });
+
+    exe.addModule("gamefx", gamefx_module);
 
     linkSystemDeps(exe);
 }
@@ -175,7 +189,7 @@ pub fn linkSystemDeps(step: *std.build.LibExeObjStep) void {
 pub fn installExample(b: *std.build.Builder, exe: *std.build.LibExeObjStep, comptime name: []const u8) void {
     // TODO: Problems with LTO on Windows.
     exe.want_lto = false;
-    exe.strip = exe.build_mode == .ReleaseFast;
+    exe.strip = false;
 
     comptime var desc_name: [name.len]u8 = [_]u8{0} ** name.len;
     comptime _ = std.mem.replace(u8, name, "_", " ", desc_name[0..]);
@@ -185,7 +199,7 @@ pub fn installExample(b: *std.build.Builder, exe: *std.build.LibExeObjStep, comp
     install.dependOn(&b.addInstallArtifact(exe).step);
 
     const run_step = b.step(name ++ "_run", "Run '" ++ desc_name[0..desc_size] ++ "' example");
-    const run_cmd = exe.run();
+    const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(install);
     run_step.dependOn(&run_cmd.step);
 

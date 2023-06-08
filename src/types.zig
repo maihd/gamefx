@@ -7,7 +7,7 @@ pub const Vec           = zmath.Vec;
 pub const Mat           = zmath.Mat;
 pub const Quat          = zmath.Quat;
 
-pub const Vec2          = Vec;  // For specify components needed
+pub const Vec2          = @Vector(2, f32);
 pub const Vec3          = Vec;  // For specify components needed
 pub const Vec4          = Vec;  // For specify components needed
 

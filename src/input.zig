@@ -6,7 +6,7 @@ const types = @import("types.zig");
 // Types
 
 const Key           = types.Key;
-const Vec           = types.Vec;
+const Vec2          = types.Vec2;
 const MouseButton   = types.MouseButton;
 const MouseCursor   = types.MouseCursor;
 
@@ -56,30 +56,30 @@ pub fn getMouseY() f32 {
     return position.y;
 }
 
-pub fn getMouseDelta() Vec {
+pub fn getMouseDelta() Vec2 {
     var delta = raylib.GetMouseDelta();
     return math.vec2(delta.x, delta.y);
 }
 
-pub fn getMouseWheel() Vec {
+pub fn getMouseWheel() Vec2 {
     var wheel = raylib.GetMouseWheelMoveV();
     return math.vec2(wheel.x, wheel.y);
 }
 
-pub fn getMousePosition() Vec {
+pub fn getMousePosition() Vec2 {
     var position = raylib.GetMousePosition();
     return math.vec2(position.x, position.y);
 }
 
-pub fn setMouseScale(scale: Vec) void {
+pub fn setMouseScale(scale: Vec2) void {
     raylib.SetMouseScale(scale[0], scale[1]);
 }
 
-pub fn setMouseOffset(offset: Vec) void {
+pub fn setMouseOffset(offset: Vec2) void {
     raylib.SetMouseOffset(@floatToInt(c_int, offset[0]), @floatToInt(c_int, offset[1]));
 }
 
-pub fn setMousePosition(position: Vec) void {
+pub fn setMousePosition(position: Vec2) void {
     raylib.SetMousePosition(@floatToInt(c_int, position[0]), @floatToInt(c_int, position[1]));
 }
 
